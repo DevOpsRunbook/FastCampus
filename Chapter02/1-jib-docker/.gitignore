@@ -1,0 +1,21 @@
+.gradle
+build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Cache of project
+.gradletasknamecache
+
+# eclipse stuff
+.classpath
+.settings/
+.project
+/bin/
+
+# idea stuff
+.idea/
+*.iml
+
+# vscode
+.vscode

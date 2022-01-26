@@ -1,0 +1,102 @@
+buildscript {
+  ext {
+      springBootVersion = '1.5.4.RELEASE'
+      jacocoVersion = '0.8.7'
+  }
+  repositories {
+      mavenCentral()
+      maven {
+          url "https://plugins.gradle.org/m2/"
+      }
+  }
+  dependencies {
+      classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+      classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.1"
+  }
+}
+
+plugins {
+	id 'org.springframework.boot' version '2.5.2'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+  id 'com.google.cloud.tools.jib' version '3.1.4'
+}
+
+apply plugin: 'org.sonarqube'
+apply plugin: 'jacoco'
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+	useJUnitPlatform()
+}
+jacoco{
+  toolVersion = "${jacocoVersion}"
+}
+
+jacocoTestReport {
+ reports{
+  html.enabled=true
+  xml.enabled=true
+  csv.enabled=true
+ }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+sonarqube {
+  properties {
+  property "sonar.projectName","SpringBoot Code Coverage Demo"
+  property "sonar.exclusions", "**/generated-*/**/*"
+  property "sonar.projectKey", "org.sonarqubeJacocoCodeCoverage"
+  property "sonar.reportPath" , "${project.buildDir}/jacoco/test.exec"
+	property "sonar.host.url", "<SonarQube URL>"
+  property "sonar.sources", "src/main/java"
+  property "sonar.tests", "src/test/java"
+	property "sonar.login", "<SonarQube ID>"
+	property "sonar.password", "<SonarQube Password>"
+  }
+}
+
+tasks['sonarqube'].dependsOn test
+
+jib {
+    from {
+        image = 'adoptopenjdk/openjdk11:alpine-jre'
+    }
+    to {
+        image = '<AWS ECR Repository URL>'
+        tags = ['<Tag Name>']
+    }
+    container {
+        entrypoint = ['java', '-Dspring.profiles.active=test', '-jar', 'spring-boot-gradle-demo-0.0.1-SNAPSHOT.jar']
+        // mainClass = 'com.test.StartApplication'
+        jvmFlags = ['-Xms512m', '-Xmx512m', '-Xdebug', '-XshowSettings:vm', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseContainerSupport']
+        ports = ['8080']
+
+        environment = [SPRING_OUTPUT_ANSI_ENABLED: "ALWAYS"]
+        labels = [version:project.version, name:project.name, group:project.group]
+
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+        format = 'Docker'
+    }
+    extraDirectories {
+        paths {
+            path {
+                from = file('build/libs')
+            }
+        }
+    }
+}

@@ -1,0 +1,68 @@
+def mainDir="Chapter06/3-1_nexus-jenkins-docker"
+def region="<AWS Region>"
+def nexusUrl="<Nexus Registry URL>"
+def repository="<AWS ECR Repository Name>"
+def jenkinsHost="<AWS EC2 Jenkins VM IP>"
+def deployHost="<AWS EC2 Deploy VM IP>"
+def tagName="<Type Nexus>"
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Pull Codes from Github'){
+            steps{
+                checkout scm
+            }
+        }
+        stage('Build Codes by Gradle') {
+            steps {
+                sh """
+                cd ${mainDir}
+                ./gradlew clean build
+                """
+            }
+        }
+        stage('Build Docker Image by Jib & Push to Nexus Registry') {
+            steps {
+                sh """
+                    cd ${mainDir}
+                    docker login -u '<Nexus ID>' -p '<Nexus Password>' ${nexusUrl}
+                    ./gradlew jib -Djib.to.image=${nexusUrl}/${repository}:${tagName} -DsendCredentialsOverHttp=true -Djib.console='plain'
+                """
+            }
+        }
+        stage('Scan Security CVE at Clair Scanner') {
+            steps {
+                script {
+                    try {
+                        jenkins_ip = sh(script: "docker inspect -f '{{ .NetworkSettings.IPAddress }}' jenkins", returnStdout: true).trim()
+                        clair_ip = sh(script: "docker inspect -f '{{ .NetworkSettings.IPAddress }}' clair", returnStdout: true).trim()
+                        sh """
+                            apt update
+                            apt install -y wget
+                            docker pull ${nexusUrl}/${repository}:${tagName}
+                            wget https://github.com/arminc/clair-scanner/releases/download/v12/clair-scanner_linux_amd64
+                            chmod +x clair-scanner_linux_amd64
+                            mv clair-scanner_linux_amd64 /usr/local/bin/clair-scanner
+                        """
+                        sh "clair-scanner --ip ${jenkins_ip} --clair='http://${clair_ip}:6060' --log='clair.log' \
+                                --report='report.txt' ${nexusUrl}/${repository}:${tagName}"
+                    } catch (err) {
+                        echo err.getMessage()
+                    }
+                }
+                echo currentBuild.result
+            }
+        }
+        stage('Deploy container to AWS EC2 VM'){
+            steps{
+                sshagent(credentials : ["deploy-key"]) {
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@${deployHost} \
+                     'docker login -u test -p '!test00' ${nexusUrl}; \
+                      docker run -d -p 80:8080 -t ${nexusUrl}/${repository}:${tagName};'"
+                }
+            }
+        }
+    }
+}
