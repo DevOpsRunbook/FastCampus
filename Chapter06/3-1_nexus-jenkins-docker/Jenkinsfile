@@ -1,10 +1,9 @@
 def mainDir="Chapter06/3-1_nexus-jenkins-docker"
 def region="<AWS Region>"
-def nexusUrl="<Nexus Registry URL>"
-def repository="<AWS ECR Repository Name>"
-def jenkinsHost="<AWS EC2 Jenkins VM IP>"
-def deployHost="<AWS EC2 Deploy VM IP>"
-def tagName="<Type Nexus>"
+def nexusUrl="<Nexus Private IP>:5000"
+def repository="<Image Repository Name>"
+def deployHost="<Deploy VM Private IP>"
+def tagName="<Image Tag Name>"
 
 pipeline {
     agent any

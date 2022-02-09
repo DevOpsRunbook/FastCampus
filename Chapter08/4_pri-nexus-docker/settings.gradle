@@ -1,0 +1,10 @@
+pluginManagement {
+  repositories {
+    maven {
+        url "http://<Nexus Private IP>:8081/repository/<nexus artifact repository Name>"
+        allowInsecureProtocol true
+    }
+  }
+}
+
+rootProject.name = 'test-docker-spring-boot'

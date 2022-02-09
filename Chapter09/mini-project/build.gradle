@@ -1,0 +1,96 @@
+plugins {
+  id 'java'
+  id 'org.springframework.boot' version '2.6.2'
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+  id 'com.google.cloud.tools.jib' version '3.1.4'
+  id 'org.sonarqube' version '3.3'
+  id 'jacoco'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+repositories {
+    maven {
+        url "http://<Nexus Private IP>:8081/repository/<nexus artifact repository Name>"
+        allowInsecureProtocol true
+    }
+
+}
+
+version = '0.0.1-SNAPSHOT'
+description = 'update-docker-mini-project'
+group = 'com.test'
+
+java.sourceCompatibility = JavaVersion.VERSION_11
+
+jar {
+	enabled = false
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+jacoco{
+  toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+ reports{
+  html.enabled=true
+  xml.enabled=true
+  csv.enabled=true
+ }
+}
+
+sonarqube {
+  properties {
+      property "sonar.projectName","update-docker-mini-project"
+      property "sonar.exclusions", "**/generated-*/**/*"
+      property "sonar.projectKey", "org.sonarqubeJacocoCodeCoverage"
+      property "sonar.reportPath" , "${project.buildDir}/jacoco/test.exec"
+      property "sonar.host.url", "http://<SonarQube Private IP>:9000"
+      property "sonar.sources", "src/main/java"
+      property "sonar.tests", "src/test/java"
+      property "sonar.login", "<SonarQube ID>"
+      property "sonar.password", "<SonarQube PW>"
+  }
+}
+
+tasks['sonarqube'].dependsOn test
+
+
+jib {
+  from {
+    image = "<Nexus Private IP>:5000/<Nexus Repository Name>:<Image Tag Name>"
+  }
+  allowInsecureRegistries = true
+	container {
+    entrypoint = ['java', '-Dspring.profiles.active=test', '-jar', 'update-docker-mini-project-0.0.1-SNAPSHOT.jar']
+    // mainClass = 'com.test.StartApplication'
+    jvmFlags = ['-Xms512m', '-Xmx512m', '-Xdebug', '-XshowSettings:vm', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseContainerSupport']
+		ports = ['8080']
+
+    environment = [SPRING_OUTPUT_ANSI_ENABLED: "ALWAYS"]
+    labels = [version:project.version, name:project.name, group:project.group]
+
+    creationTime = 'USE_CURRENT_TIMESTAMP'
+    format = 'Docker'
+	}
+  extraDirectories {
+    paths {
+      path {
+        from = file('build/libs')
+      }
+    }
+  }
+}

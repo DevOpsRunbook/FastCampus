@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -40,8 +40,8 @@ jib {
   }
   // Nexus Registry URL 및 Tag 입력
   to {
-    image = '<Nexus Registry URL>'
-    tags = ['<Tag Name>']
+    image = '<Nexus Private IP>:5000/<Image Repository Name>'
+    tags = ['<Image Tag Name>']
   }
   allowInsecureRegistries = true
 	container {

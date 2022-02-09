@@ -19,7 +19,7 @@ plugins {
 	id 'org.springframework.boot' version '2.5.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-  id 'com.google.cloud.tools.jib' version '3.1.4'
+    id 'com.google.cloud.tools.jib' version '3.1.4'
 }
 
 apply plugin: 'org.sonarqube'
@@ -58,15 +58,15 @@ tasks.withType(JavaCompile) {
 
 sonarqube {
   properties {
-  property "sonar.projectName","SpringBoot Code Coverage Demo"
-  property "sonar.exclusions", "**/generated-*/**/*"
-  property "sonar.projectKey", "org.sonarqubeJacocoCodeCoverage"
-  property "sonar.reportPath" , "${project.buildDir}/jacoco/test.exec"
-	property "sonar.host.url", "<SonarQube URL>"
-  property "sonar.sources", "src/main/java"
-  property "sonar.tests", "src/test/java"
-	property "sonar.login", "<SonarQube ID>"
-	property "sonar.password", "<SonarQube Password>"
+      property "sonar.projectName","SpringBoot Code Coverage Demo"
+      property "sonar.exclusions", "**/generated-*/**/*"
+      property "sonar.projectKey", "org.sonarqubeJacocoCodeCoverage"
+      property "sonar.reportPath" , "${project.buildDir}/jacoco/test.exec"
+      property "sonar.host.url", "http://<SonarQube Private IP>:9000"
+      property "sonar.sources", "src/main/java"
+      property "sonar.tests", "src/test/java"
+      property "sonar.login", "<SonarQube ID>"
+      property "sonar.password", "<SonarQube PW>"
   }
 }
 
@@ -77,8 +77,8 @@ jib {
         image = 'adoptopenjdk/openjdk11:alpine-jre'
     }
     to {
-        image = '<AWS ECR Repository URL>'
-        tags = ['<Tag Name>']
+        image = '<AWS ECR URL>/<Image Repository Name>'
+        tags = ['<Image Tag Name>']
     }
     container {
         entrypoint = ['java', '-Dspring.profiles.active=test', '-jar', 'spring-boot-gradle-demo-0.0.1-SNAPSHOT.jar']
