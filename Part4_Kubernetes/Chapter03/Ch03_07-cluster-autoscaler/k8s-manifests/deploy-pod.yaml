@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-pod
+  namespace: test-ca
+  labels:
+    app: deploy-pod-app
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: deploy-pod-app
+  template:
+    metadata:
+      labels:
+        app: deploy-pod-app
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+      containers:
+        - name: nginx
+          image: public.ecr.aws/nginx/nginx:1.21
+          ports:
+            - name: http
+              containerPort: 80
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+      nodeSelector:
+        kubernetes.io/os: linux

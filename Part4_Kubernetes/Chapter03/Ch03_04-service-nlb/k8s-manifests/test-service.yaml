@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nlb-sample-service
+  namespace: test-service-nlb
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/subnets: <Public Subnet1 ID>, <Public Subnet2 ID>
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: LoadBalancer
+  selector:
+    app: nginx

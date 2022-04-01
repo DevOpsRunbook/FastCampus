@@ -1,0 +1,18 @@
+---
+apiVersion: crd.k8s.amazonaws.com/v1alpha1
+kind: ENIConfig
+metadata:
+ name: ap-northeast-2a
+spec:
+  securityGroups: 
+    - <Security Group ID>
+  subnet: <Subnet ID 1>
+---
+apiVersion: crd.k8s.amazonaws.com/v1alpha1
+kind: ENIConfig
+metadata:
+ name: ap-northeast-2c
+spec:
+  securityGroups: 
+    - <Security Group ID>
+  subnet: <Subnet ID 2>

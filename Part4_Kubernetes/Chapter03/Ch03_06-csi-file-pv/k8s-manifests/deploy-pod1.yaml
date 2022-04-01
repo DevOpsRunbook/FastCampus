@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deploy-pod1
+  namespace: test-csi-file-pv
+spec:
+  containers:
+    - name: app
+      image: centos
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo $(date -u) >> /dpod1/out; sleep 5; done"]
+      volumeMounts:
+        - name: persistent-storage1
+          mountPath: /dpod1
+  volumes:
+    - name: persistent-storage1
+      persistentVolumeClaim:
+        claimName: efs-pv-claim
