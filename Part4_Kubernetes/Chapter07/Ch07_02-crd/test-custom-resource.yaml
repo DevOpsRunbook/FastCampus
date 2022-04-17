@@ -1,0 +1,5 @@
+apiVersion: "extension.example.com/v1"
+kind: test
+metadata:
+  name: test-custom-resource
+size: 2

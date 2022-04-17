@@ -1,0 +1,92 @@
+def awsECRURL="<AWS ECR Repository URL>"
+def awsKey="aws-key"
+def awsRegion="ap-northeast-2"
+def branch="master"
+def commitMsg="mini-project"
+def directoryPath="Chapter11/mini-project/service"
+def githubEmail="<Github Email명>"
+def githubKey="github-key"
+def githubSSHURL="git@github.com:<Github Profile명>/<Github Repository명>.git"
+def imageTag="red"
+
+podTemplate(label: 'docker-build',
+  containers: [
+    containerTemplate(
+      name: 'docker',
+      image: 'docker',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+    containerTemplate(
+      name: 'argo',
+      image: 'argoproj/argo-cd-ci-builder:latest',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+  ],
+  volumes: [ 
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'), 
+  ]
+) {
+  node('docker-build') {
+
+		stage('Checkout') {
+            container('docker'){
+                checkout scm
+            }
+		}
+
+		stage('Docker Build') {
+			dir(path: "${directoryPath}/container"){
+				container('docker') {
+					image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
+				}
+			}
+		}
+
+		stage('ECR Push') {
+			container('docker') {
+				docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
+					image.push()
+				}
+			}
+		}
+
+        stage('Deploy'){
+            container('argo'){
+                checkout(
+                    [
+                        $class: 'GitSCM',
+                        extensions: scm.extensions,
+                        branches: [
+                            [
+                                name: "*/${branch}"
+                            ]
+                        ],
+                        userRemoteConfigs: [
+                            [
+                                url: "${githubSSHURL}",
+                                credentialsId: "${githubKey}",
+                            ]
+                        ]
+                    ]
+                )
+                sshagent(credentials: ["${githubKey}"]){
+                    sh("""
+                        #!/usr/bin/env bash
+                        set +x
+                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                        git config --global user.email ${githubEmail}
+                        git checkout ${branch}
+                        cd ${directoryPath}/helm-charts
+                        sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
+                        cd ../../../../
+                        git commit -a -m ${commitMsg}
+                        git remote set-url origin ${githubSSHURL}
+                        git push -u origin master
+                    """)
+                }
+            }
+        }		
+	}
+}

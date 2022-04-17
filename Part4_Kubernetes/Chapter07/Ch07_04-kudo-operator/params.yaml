@@ -1,0 +1,8 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: replicas
+    description: "Replicas parameter"
+    default: "1"
+  - name: appVersion
+    description: "App version parameter"
+    default: "1.20"

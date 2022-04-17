@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deploy
+spec:
+  selector:
+    matchLabels:
+      run: test-deploy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: test-deploy
+    spec:
+      containers:
+      - name: test-deploy
+        image: k8s.gcr.io/hpa-example
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-deploy
+  labels:
+    run: test-deploy
+spec:
+  ports:
+  - port: 80
+  selector:
+    run: test-deploy

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bubble-pool
+spec:
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: bubble-pool
+  externalTrafficPolicy: Cluster
+  sessionAffinity: None
+  type: LoadBalancer

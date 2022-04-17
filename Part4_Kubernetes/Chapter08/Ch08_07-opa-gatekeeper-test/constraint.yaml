@@ -1,0 +1,19 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+ name: label-check
+spec:
+ match:
+   kinds:
+     - apiGroups: [""]
+       kinds: ["Namespace", "Pod"]
+   excludedNamespaces:
+   - kube-system
+   - kube-public
+   - kube-node-lease
+   - gatekeeper-system
+ parameters:
+   labels:
+     - "zone"
+     - "stage"
+     - "status"   

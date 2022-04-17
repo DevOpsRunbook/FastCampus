@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: bubble-pool
+spec:
+  replicas: 3
+  strategy:
+    canary:
+      steps:
+      - setWeight: 33
+      - pause: {duration: 10}
+      - setWeight: 66
+      - pause: {duration: 10}
+      - setWeight: 99
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: bubble-pool
+  template:
+    metadata:
+      labels:
+        app: bubble-pool
+    spec:
+      containers:
+      - name: bubble-pool
+        image: argoproj/rollouts-demo:red
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 5m

@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-2048
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/subnets: <Subnet ID>
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/certificate-arn: '<ACM의 ARN>'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+spec:
+  rules:
+    - host: <DNS 도메인 주소명>
+      http:
+        paths:
+          - backend:
+              service:
+                name: service-2048
+                port:
+                  number: 443
+            path: /
+            pathType: Prefix
+          - backend:
+              service:
+                name: service-2048
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
