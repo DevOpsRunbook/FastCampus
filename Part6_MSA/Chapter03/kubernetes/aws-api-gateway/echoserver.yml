@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver
+spec:
+  selector:
+    matchLabels:
+      app: echoserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: echoserver
+    spec:
+      containers:
+      - image: gcr.io/google_containers/echoserver:1.4
+        imagePullPolicy: Always
+        name: echoserver
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb-ip"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-subnets: subnet-0dca11143b642608f, subnet-062d842b851215642
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: echoserver

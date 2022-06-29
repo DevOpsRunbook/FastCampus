@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: author-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: author
+  template:
+    metadata:
+      labels:
+        app: author
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.17.3
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: workdir
+          mountPath: /usr/share/nginx/html
+  # These containers are run during pod initialization
+      initContainers:
+      - name: install
+        image: bitnami/git
+        command: ["git"]
+        args: ["clone", "https://github.com/aws-samples/amazon-apigateway-ingress-controller-blog.git", "/var/lib/data/"]
+        volumeMounts:
+        - name: workdir
+          mountPath: "/var/lib/data"
+      dnsPolicy: Default
+      volumes:
+      - name: workdir
+        emptyDir: {}
+        
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: authorservice
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb-ip"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-subnets: subnet-0dca11143b642608f, subnet-062d842b851215642
+spec:
+  type: ClusterIP
+  selector:
+    app: author
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+           

@@ -1,0 +1,16 @@
+server:
+    port: 8080
+spring:
+    profiles: docker
+    data:
+        mongodb:
+            database: examples
+            host: mongodb.mongodb-query
+            port: 27017
+    kafka:
+        bootstrap-servers: kafka-headless.kafka:9092
+        consumer:
+            group-id: test-consumer-group
+message:
+    topic:
+        createPhone: create-phone

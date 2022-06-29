@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-mgmt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-mgmt
+  template:
+    metadata:
+      labels:
+        app: order-mgmt
+    spec:
+      containers:
+        - name: order-mgmt
+          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/order-mgmt:1.0
+          imagePullPolicy: Always
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+          ports:
+            - containerPort: 8085
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-mgmt
+spec:
+  selector:
+    app: order-mgmt
+  ports:
+    - port: 8085
+      targetPort: 8085
+  type: LoadBalancer

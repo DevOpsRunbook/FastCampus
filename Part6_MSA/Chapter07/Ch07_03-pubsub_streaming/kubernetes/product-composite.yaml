@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-composite
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-composite
+  template:
+    metadata:
+      labels:
+        app: product-composite
+    spec:
+      containers:
+        - name: product-composite
+          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/product-composite:1.0
+          imagePullPolicy: Always
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+            - name: MANAGEMENT_HEALTH_RABBIT_ENABLED
+              value: "false"
+            - name: SPRING_CLOUD_STREAM_DEFAULTBINDER
+              value: "kafka"
+            - name: SPRING_CLOUD_STREAM_BINDINGS_OUTPUT-PRODUCTS_PRODUCER_PARTITION-KEY-EXPRESSION
+              value: "payload.key"
+            - name: SPRING_CLOUD_STREAM_BINDINGS_OUTPUT-RECOMMENDATIONS_PRODUCER_PARTITION-KEY-EXPRESSION
+              value: "payload.key"
+            - name: SPRING_CLOUD_STREAM_BINDINGS_OUTPUT-RECOMMENDATIONS_PRODUCER_PARTITION-COUNT
+              value: '2'
+            - name: SPRING_CLOUD_STREAM_BINDINGS_OUTPUT-REVIEWS_PRODUCER_PARTITION-KEY-EXPRESSION
+              value: "payload.key"
+            - name: SPRING_CLOUD_STREAM_BINDINGS_OUTPUT-REVIEWS_PRODUCER_PARTITION-COUNT
+              value: '2'
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: 350Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-composite
+spec:
+  selector:
+    app: product-composite
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer

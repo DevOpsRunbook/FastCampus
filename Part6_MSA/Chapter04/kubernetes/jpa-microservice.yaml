@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jpa-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jpa-microservice
+  template:
+    metadata:
+      labels:
+        app: jpa-microservice
+    spec:
+      containers:
+        - name: jpaservice
+          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/jpaservice:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jpa-microservice
+spec:
+  selector:
+    app: jpa-microservice
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer

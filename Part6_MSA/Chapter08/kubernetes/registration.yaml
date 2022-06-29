@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registration
+  template:
+    metadata:
+      labels:
+        app: registration
+    spec:
+      containers:
+        - name: registration
+          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/registration:1.0
+          imagePullPolicy: Always
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+          ports:
+            - containerPort: 8086
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registration
+spec:
+  selector:
+    app: registration
+  ports:
+    - port: 8086
+      targetPort: 8086
+  type: ClusterIP

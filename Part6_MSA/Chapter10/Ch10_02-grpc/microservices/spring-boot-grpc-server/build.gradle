@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.8.18'
+    }
+}
+
+plugins {
+    id 'java'
+    id "com.google.protobuf" version "0.8.18"
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+dependencies {
+    implementation project(':spring-boot-grpc-api')
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    implementation "io.grpc:grpc-protobuf:1.28.0"
+    implementation "io.grpc:grpc-stub:1.28.0"
+    compileOnly "org.apache.tomcat:annotations-api:6.0.53"
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.19.1'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.19.1'
+    implementation 'com.google.protobuf:protobuf-gradle-plugin:0.8.18'
+}
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+description = 'spring-boot-grpc-server'
+
+repositories {
+    mavenCentral()
+}
+
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.0.0"
+    }
+    generatedFilesBaseDir = "$projectDir/src"
+}
+
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'co.fastcampus.spring.boot.grpc.server.HelloServerApplication'
+    }
+    enabled = false
+}

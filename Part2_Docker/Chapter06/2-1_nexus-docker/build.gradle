@@ -40,8 +40,8 @@ jib {
   }
   // Nexus Registry URL 및 Tag 입력
   to {
-    image = '<Nexus Private IP>:5000/<Image Repository Name>'
-    tags = ['<Image Tag Name>']
+    image = 'ec2-15-164-216-147.ap-northeast-2.compute.amazonaws.com:5000/test'
+    tags = ['1.0']
   }
   allowInsecureRegistries = true
 	container {

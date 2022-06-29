@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-boot-grpc-client
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 19090
+      targetPort: 19090
+  selector:
+    app: spring-boot-grpc-client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-grpc-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-boot-grpc-client
+  template:
+    metadata:
+      labels:
+        app: spring-boot-grpc-client
+    spec:
+      containers:
+        - name: spring-boot-grpc-client
+          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/grpc-client:1.0
+          imagePullPolicy: Always
+          tty: true
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 19090

@@ -1,0 +1,12 @@
+server.port: 7001
+server.error.include-message: always
+
+logging:
+  level:
+    root: INFO
+    co.fastcampus: DEBUG
+
+---
+spring.profiles: docker
+
+server.port: 8080

@@ -1,0 +1,9 @@
+apiVersion: v2
+description: The Cloud-Native Ingress and API-management
+engine: gotpl
+home: https://konghq.com/
+icon: https://s3.amazonaws.com/downloads.kong/universe/assets/icon-kong-inc-large.png
+name: kong
+sources:
+version: 2.8.0
+appVersion: "2.8"

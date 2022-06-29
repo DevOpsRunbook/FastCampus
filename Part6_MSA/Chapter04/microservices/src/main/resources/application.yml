@@ -1,0 +1,15 @@
+spring:
+    application: 
+        name: jpaservice
+    datasource:
+        url: jdbc:mysql://<RDS Endpoint>.ap-northeast-2.rds.amazonaws.com:3306/employees?useSSL=false
+        username: <Your username>
+        password: <Your password>
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+server:
+    port: 8080

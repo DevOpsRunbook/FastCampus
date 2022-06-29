@@ -1,0 +1,54 @@
+server.port: 7002
+server.error.include-message: always
+
+spring.data.mongodb:
+  host: localhost
+  port: 27017
+  database: recommendation-db
+
+spring.cloud.stream:
+  defaultBinder: rabbit
+  default.contentType: application/json
+  bindings.input:
+    destination: recommendations
+    group: recommendationsGroup
+
+spring.cloud.stream.bindings.input.consumer:
+  maxAttempts: 3
+  backOffInitialInterval: 500
+  backOffMaxInterval: 1000
+  backOffMultiplier: 2.0
+
+spring.cloud.stream.rabbit.bindings.input.consumer:
+  autoBindDlq: true
+  republishToDlq: true
+
+spring.rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  username: guest
+  password: guest
+
+logging:
+  level:
+    root: INFO
+    co.fastcampus: DEBUG
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
+---
+spring.profiles: docker
+
+server.port: 8080
+
+spring.data.mongodb:
+  host: mongodb.mongodb
+  port: 27017
+  database: recommendation-db
+
+spring.rabbitmq:
+  host: rabbitmq-headless.rabbitmq
+  port: 5672
+  username: guest
+  password: guest

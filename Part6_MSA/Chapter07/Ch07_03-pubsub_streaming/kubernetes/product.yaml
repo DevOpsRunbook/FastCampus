@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: product
+          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/product:1.0
+          imagePullPolicy: Always
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+            - name: MANAGEMENT_HEALTH_RABBIT_ENABLED
+              value: "false"
+            - name: SPRING_CLOUD_STREAM_DEFAULTBINDER
+              value: "kafka"
+            - name: SPRING_CLOUD_STREAM_BINDINGS_INPUT_CONSUMER_PARTITIONED
+              value: "true"
+            - name: SPRING_CLOUD_STREAM_BINDINGS_INPUT_CONSUMER_INSTANCECOUNT
+              value: '2'
+            - name: SPRING_CLOUD_STREAM_BINDINGS_INPUT_CONSUMER_INSTANCEINDEX
+              value: '0'
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: 350Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product
+spec:
+  selector:
+    app: product
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP

@@ -1,0 +1,23 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.7.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'java'
+}
+
+group = 'co.fastcampus'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	//swagger
+	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+	
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

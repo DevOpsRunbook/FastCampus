@@ -1,0 +1,39 @@
+buildscript {
+    ext {
+        springBootVersion = '2.3.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'co.fastcampus.command'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.8
+description = 'Command CQRS with Kafka'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.data:spring-data-mongodb:3.1.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'com.h2database:h2'
+    implementation 'org.projectlombok:lombok:1.18.22'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+}

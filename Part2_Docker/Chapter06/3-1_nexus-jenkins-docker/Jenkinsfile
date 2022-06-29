@@ -1,7 +1,7 @@
 def mainDir="Chapter06/3-1_nexus-jenkins-docker"
-def region="<AWS Region>"
-def nexusUrl="<Nexus Private IP>:5000"
-def repository="<Image Repository Name>"
+def region="ap-northeast-2"
+def nexusUrl="ec2-15-164-216-147.ap-northeast-2.compute.amazonaws.com:5000"
+def repository="test"
 def deployHost="<Deploy VM Private IP>"
 def tagName="<Image Tag Name>"
 

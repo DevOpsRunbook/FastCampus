@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: product
+          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/product:1.0
+          imagePullPolicy: Always
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: 350Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product
+spec:
+  selector:
+    app: product
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
