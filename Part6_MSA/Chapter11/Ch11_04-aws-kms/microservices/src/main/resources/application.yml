@@ -1,0 +1,23 @@
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: <aws access-key>
+      secret-key: <aws secret-key>
+    stack:
+      auto: false
+    kms:
+      org:
+        master:
+          key:
+            id: <aws kms-id>
+
+spring:
+  profiles:
+    active: docker
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  port: 8080

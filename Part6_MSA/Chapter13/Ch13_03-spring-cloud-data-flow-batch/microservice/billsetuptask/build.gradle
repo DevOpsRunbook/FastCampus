@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.6.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.google.cloud.tools.jib' version '3.1.4'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.6.3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-task:2.4.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.5'
+    implementation 'org.postgresql:postgresql:42.3.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.28'
+    testImplementation 'com.h2database:h2:1.4.200'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.3'
+}
+
+description = 'Bill Setup Task'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+java {
+    withJavadocJar()
+}
+
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'co.fastcampus.billsetuptask.BillsetuptaskApplication'
+    }
+    enabled = false
+}
+
+jib {
+    from {
+        image = "springcloud/openjdk"
+    }
+    to {
+        image = '<AWS ECR URL>/mini-project'
+        tags = ['billsetuptask']
+    }
+    container {
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+    }
+}

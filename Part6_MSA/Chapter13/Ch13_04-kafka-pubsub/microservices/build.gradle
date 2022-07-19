@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter:2.4.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.4.2'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka:3.0.12.RELEASE'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.4.2'
+    testImplementation 'org.springframework.cloud:spring-cloud-stream:3.0.12.RELEASE'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+}
+
+group = 'co.fastcampus.kafka_intro'
+version = '0.0.1-SNAPSHOT'
+description = 'kafka'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'co.fastcampus.kafka.Application'
+    }
+    enabled = false
+}

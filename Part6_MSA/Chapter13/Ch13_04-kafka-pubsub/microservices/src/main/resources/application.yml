@@ -1,0 +1,51 @@
+spring:
+  profiles: docker
+
+  application:
+    name: kafka
+
+  cloud.stream:
+    bindings:
+      ##
+      inventoryChecking-out:
+        destination: kafka.inventoryChecking
+      inventoryChecking-in:
+        destination: kafka.inventoryChecking
+        group: ${spring.application.name}-inventoryChecking-group
+        consumer:
+          maxAttempts: 1 # on example we are simulating "out of stock" scenario, so there is no point for retrying after it failed in the first attempt
+
+      order-dlq:
+        destination: kafka.ordering_dlq
+
+      shipping-out:
+        destination: kafka.shipping
+      shipping-in:
+        destination: kafka.shipping
+        group: ${spring.application.name}-shipping-group
+
+    kafka:
+      bindings:
+        # If Inventory Checking fails
+        inventoryChecking-in.consumer:
+          enableDlq: true
+          dlqName: kafka.ordering_dlq
+          autoCommitOnError: true
+          AutoCommitOffset: true
+
+        # If shipping fails
+        shipping-in.consumer:
+          enableDlq: true
+          dlqName: kafka.ordering_dlq
+          autoCommitOnError: true
+          AutoCommitOffset: true
+
+      binder:
+        brokers: kafka-headless.kafka
+        defaultBrokerPort: 9092
+
+server.port: 8080
+
+logging:
+  level:
+    co.fastcampus.kafka_intro: debug

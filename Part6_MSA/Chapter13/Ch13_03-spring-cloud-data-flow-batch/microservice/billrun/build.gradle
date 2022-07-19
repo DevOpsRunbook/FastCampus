@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.6.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.google.cloud.tools.jib' version '3.1.4'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-batch:2.6.3'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.6.3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-task:2.4.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.5'
+    implementation 'org.postgresql:postgresql:42.3.1'
+    runtimeOnly 'com.h2database:h2:1.4.200'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.28'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.3'
+    testImplementation 'org.springframework.batch:spring-batch-test:4.3.4'
+}
+
+description = 'Bill Run'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    withJavadocJar()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'co.fastcampus.billrun.BillrunApplication'
+    }
+    enabled = false
+}
+
+jib {
+    from {
+        image = "springcloud/openjdk"
+    }
+    to {
+        image = '<AWS ECR URL>/mini-project'
+        tags = ['billrun']
+    }
+    container {
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+    }
+}

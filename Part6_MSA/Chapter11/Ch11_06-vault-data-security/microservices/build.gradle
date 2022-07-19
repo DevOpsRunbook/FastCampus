@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.1'
+    implementation 'org.springframework.cloud:spring-cloud-starter-vault-config:3.1.1'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter:2.7.1'
+    implementation 'org.projectlombok:lombok:1.18.22'
+}
+
+group = 'co.fastcampus'
+version = '0.0.1-SNAPSHOT'
+description = 'vault'
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    enabled = false
+}

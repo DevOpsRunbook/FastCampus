@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-kms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aws-kms
+  template:
+    metadata:
+      labels:
+        app: aws-kms
+    spec:
+      containers:
+        - name: aws-kms
+          image: <AWS ECR URL>/aws-kms:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aws-kms
+spec:
+  selector:
+    app: aws-kms
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opentracingweb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opentracingweb
+  template:
+    metadata:
+      labels:
+        app: opentracingweb
+    spec:
+      containers:
+        - name: opentracingweb
+          image: <AWS ECR URL>/opentracingweb:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opentracingweb
+spec:
+  selector:
+    app: opentracingweb
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer

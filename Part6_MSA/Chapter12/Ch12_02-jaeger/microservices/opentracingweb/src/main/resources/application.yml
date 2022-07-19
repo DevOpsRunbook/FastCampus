@@ -1,0 +1,6 @@
+opentracing:
+  jaeger:
+    service-name: OpenTracingWeb
+    enabled: TRUE
+    udp-sender:
+      host: jaeger-agent

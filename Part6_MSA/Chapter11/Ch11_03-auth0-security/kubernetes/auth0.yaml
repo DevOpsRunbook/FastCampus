@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth0
+  template:
+    metadata:
+      labels:
+        app: auth0
+    spec:
+      containers:
+        - name: auth0
+          image: <AWS ECR URL>/auth0:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth0
+spec:
+  selector:
+    app: auth0
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: LoadBalancer

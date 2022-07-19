@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/default">
+
+<div id="page" layout:fragment="content">
+    <div class="container">
+        <div class="mt-5">
+            <div class="container">
+                <div class="row align-items-center profile-header">
+                    <div class="col-md-2 mb-3">
+                        <img th:src="${profile.get('picture')}" class="rounded-circle img-fluid profile-picture"/>
+                    </div>
+                    <div class="col-md text-center text-md-left">
+                        <h2 th:text="${profile.get('name')}"/>
+                        <p class="lead text-muted" th:text="${profile.get('email')}"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <pre class="rounded"><code class="json" id="profileJsonEl" th:text="${profileJson}"></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

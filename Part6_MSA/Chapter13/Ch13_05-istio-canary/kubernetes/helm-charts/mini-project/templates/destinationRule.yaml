@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ include "color.fullname" . }}-dr
+spec:
+  host: istio-canary-color-svc
+  subsets:
+  - name: blue-sub
+    labels:
+      color: blue
+  - name: green-sub
+    labels:
+      color: green

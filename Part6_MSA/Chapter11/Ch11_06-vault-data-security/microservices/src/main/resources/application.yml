@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: docker
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    vault:
+      host: vault-internal
+      port: 8200
+      token: <Vault Root Token>
+      scheme: http

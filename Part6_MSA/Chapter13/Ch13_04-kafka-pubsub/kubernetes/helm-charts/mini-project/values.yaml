@@ -1,0 +1,32 @@
+# Default values for order.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: <AWS ECR URL>/mini-project
+  pullPolicy: IfNotPresent
+  tag: kafka-pubsub
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: LoadBalancer
+  port: 8080
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

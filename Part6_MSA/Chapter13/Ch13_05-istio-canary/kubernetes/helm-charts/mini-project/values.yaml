@@ -1,0 +1,45 @@
+# Default values for color.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: <AWS ECR URL>/mini-project
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    memory: 32Mi
+    cpu: 5m
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+virtualService:
+  route:
+    - destination:
+        host: istio-canary-color-svc
+        subset: blue-sub
+      weight: 0
+    - destination:
+        host: istio-canary-color-svc
+        subset: green-sub
+      weight: 100

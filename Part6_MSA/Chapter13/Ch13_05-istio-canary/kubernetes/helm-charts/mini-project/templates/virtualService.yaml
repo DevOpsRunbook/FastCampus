@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "color.fullname" . }}-vs
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - istio-canary-color-gw
+  http:
+  {{- with .Values.virtualService.route }}
+  - route:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

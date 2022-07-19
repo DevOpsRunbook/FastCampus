@@ -1,0 +1,9 @@
+opentracing:
+  jaeger:
+    service-name: OpenTracingWas
+    enabled: TRUE
+    udp-sender:
+      host: jaeger-agent
+
+server:
+  port: 8081

@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.4.3'
+    implementation 'io.opentracing.contrib:opentracing-spring-jaeger-cloud-starter:3.3.1'
+}
+
+group = 'co.fastcampus'
+version = '0.0.1-SNAPSHOT'
+description = 'opentracingweb'
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'co.fastcampus.tracing.opentracingweb.OpenTracingWebApplication'
+    }
+}
