@@ -5,8 +5,7 @@ Nexus 실습시 질의주신 내용에 대한 응답 모음집입니다. 에러�
 ## FAQ
 **Question:** Nexus Docker Registry(Repository) 대상 Docker Login시 에러메시지 발생 할 때 조치 방법
 
-**Answer:** 아래와 같은 총 4가지 방식을 순서대로 진행하시거나, 이미 진행하신 부분이 있으시면 해당 부분에서 다음 항목을 수행하시면 됩니다.
-* 만일 4가지 방법으로도 조치가 안될 경우, skwjdgh1@gmail.com 이메일로 문의주시면 확인후 바로 답변 드릴 수 있도록 하겠습니다.
+**Answer:** 아래와 같은 총 5가지 방식을 순서대로 진행하시거나, 이미 진행하신 부분이 있으시면 해당 부분에서 다음 항목을 수행하시면 됩니다.
 
 ## 1. docker 컨테이너 정상 유무 확인 및 5000번 포트 정상 기동 확인 여부
 ```
@@ -73,3 +72,6 @@ Username: test
 Password:
 Login Succeeded
 ```
+
+## 5. Jenkins에서 Nexus Registry 로그인 문제 해결방법
+## [상세내용링크](detail/Jenkins_Nexus-registry.md)

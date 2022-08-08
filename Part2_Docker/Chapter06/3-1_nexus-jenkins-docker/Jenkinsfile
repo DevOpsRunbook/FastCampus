@@ -1,9 +1,12 @@
-def mainDir="Chapter06/3-1_nexus-jenkins-docker"
+def mainDir="Part2_Docker/Chapter06/3-1_nexus-jenkins-docker"
 def region="ap-northeast-2"
-def nexusUrl="ec2-15-164-216-147.ap-northeast-2.compute.amazonaws.com:5000"
-def repository="test"
-def deployHost="<Deploy VM Private IP>"
-def tagName="<Image Tag Name>"
+def nexusUrl="<Nexus VM의 프라이빗 IP DNS 이름>:5443"
+def repository="container-registry"
+def deployHost="<Deploy VM의 프라이빗 IP DNS 이름>"
+def tagName="1.0"
+def nexusid="<Nexus 접근 계정명>"
+def nexuspw="<Nexus 접근 비밀번호>"
+
 
 pipeline {
     agent any
@@ -26,8 +29,8 @@ pipeline {
             steps {
                 sh """
                     cd ${mainDir}
-                    docker login -u '<Nexus ID>' -p '<Nexus Password>' ${nexusUrl}
-                    ./gradlew jib -Djib.to.image=${nexusUrl}/${repository}:${tagName} -DsendCredentialsOverHttp=true -Djib.console='plain'
+                    docker login -u ${nexusid} -p ${nexuspw} ${nexusUrl}
+                    ./gradlew jib -Djib.to.image=${nexusUrl}/${repository}:${tagName} -Djib.console='plain'
                 """
             }
         }
@@ -58,7 +61,7 @@ pipeline {
             steps{
                 sshagent(credentials : ["deploy-key"]) {
                     sh "ssh -o StrictHostKeyChecking=no ubuntu@${deployHost} \
-                     'docker login -u test -p '!test00' ${nexusUrl}; \
+                     'docker login -u ${nexusid} -p ${nexuspw} ${nexusUrl}; \
                       docker run -d -p 80:8080 -t ${nexusUrl}/${repository}:${tagName};'"
                 }
             }

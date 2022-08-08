@@ -1,8 +1,8 @@
-# Jenkins 관련 질의응답 모음집입니다. 
+# Jenkins 관련 질의응답 모음집입니다.
 
 Jenkins 실습시 질의주신 내용에 대한 응답 모음집입니다. 에러에 대한 해결 방법도 같이 명시하였습니다.
 
-## FAQ
+## 1. Jenkins에서 no basic auth credentials. 에러메시지 발생할 때 해결 방법
 **Question:** no basic auth credentials. 에러메시지 발생시
 
 **Answer:** awscli 설치후 aws configure 설정으로 해결 (수행 방식은 아래 내용 그대로 적용하시면 되십니다.)
@@ -75,4 +75,5 @@ REPOSITORY                                               TAG       IMAGE ID     
 ubuntu@ip-172-16-0-243:~$
 ```
 
-##
+## 2. Jenkins에서 Nexus Registry 로그인 문제 해결방법
+## [상세내용링크](detail/Jenkins_Nexus-registry.md)
