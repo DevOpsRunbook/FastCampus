@@ -1,37 +1,45 @@
-resource "aws_route_table" "tfer--rtb-0493160681ebac586" {
+resource "aws_route_table" "test-route-table-pub-sub1" {
+
+  depends_on = [
+    aws_vpc.test-vpc,
+    aws_internet_gateway.test-internet-gateway
+  ]
+
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "<Internet Gateway ID>"
+    gateway_id = aws_internet_gateway.test-internet-gateway.id
   }
 
   tags = {
-    Name = "public-subnet3-routing"
+    Name = "test-route-table-pub-sub1"
   }
 
   tags_all = {
-    Name = "public-subnet3-routing"
+    Name = "test-route-table-pub-sub1"
   }
 
-  vpc_id = "<vpc_id>"
+  vpc_id = aws_vpc.test-vpc.id
 }
 
-resource "aws_route_table" "tfer--rtb-0838eb612056c8102" {
+resource "aws_route_table" "test-route-table-pub-sub3" {
+
+  depends_on = [
+    aws_vpc.test-vpc,
+    aws_internet_gateway.test-internet-gateway
+  ]
+
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "<Internet Gateway ID>"
+    gateway_id = aws_internet_gateway.test-internet-gateway.id
   }
 
   tags = {
-    Name = "public-subnet1-routing"
+    Name = "test-route-table-pub-sub3"
   }
 
   tags_all = {
-    Name = "public-subnet1-routing"
+    Name = "test-route-table-pub-sub3"
   }
 
-  vpc_id = "<vpc_id>"
-}
-
-resource "aws_route_table" "tfer--rtb-09544a875edc4d02f" {
-  vpc_id = "<vpc_id>"
+  vpc_id = aws_vpc.test-vpc.id
 }

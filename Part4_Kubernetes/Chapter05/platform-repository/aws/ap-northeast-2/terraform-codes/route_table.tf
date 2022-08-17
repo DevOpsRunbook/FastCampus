@@ -1,4 +1,3 @@
-
 resource "aws_route_table" "test-route-table-pub-sub1" {
 
   depends_on = [

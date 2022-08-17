@@ -1,3 +1,8 @@
-resource "aws_internet_gateway" "tfer--igw-000d32da1cc2d6902" {
-  vpc_id = "<vpc_id>"
+resource "aws_internet_gateway" "test-internet-gateway" {
+
+  depends_on = [
+    aws_vpc.test-vpc
+  ]
+
+  vpc_id = aws_vpc.test-vpc.id
 }
