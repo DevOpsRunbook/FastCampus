@@ -77,3 +77,6 @@ ubuntu@ip-172-16-0-243:~$
 
 ## 2. Jenkins에서 Nexus Registry 로그인 문제 해결방법
 ## [상세내용링크](detail/Jenkins_Nexus-registry.md)
+
+## 3. Jenkins에서 Github Repository를 SSH URL로 연결시 문제 해결방법
+## [상세내용링크](detail/Jenkins_Repo_URL.md)
