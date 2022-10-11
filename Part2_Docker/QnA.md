@@ -6,3 +6,4 @@
 ## * [AWS ECR](QnA/AWS-ECR.md)
 ## * [Jenkins](QnA/Jenkins.md)
 ## * [Nexus](QnA/Nexus.md)
+## * [Gradle](QnA/Gradle.md)
