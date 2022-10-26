@@ -6,3 +6,4 @@
 ## * [AWS EC2에서 JAVA JDK 설치 방법](AWS-Appendix/AWS-EC2-JAVA-JDK.md)
 ## * [AWS EC2 - Ubuntu Linux 정보 확인 방법](AWS-Appendix/AWS-EC2-Ubuntu-Linux.md)
 ## * [AWS ECR 구성 및 관리](AWS-Appendix/AWS-ECR.md)
+## * [AWS 리소스를 Terraform으로 프로비저닝하는 방법](AWS-Appendix/AWS-Provisioning-Terraform.md)
