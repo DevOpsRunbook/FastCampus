@@ -1,0 +1,29 @@
+plugins {
+  id 'java'
+  id 'org.springframework.boot' version '2.7.1'
+  id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.1'
+	implementation 'org.springframework.boot:spring-boot-starter-web:2.7.1'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools:2.7.1'
+}
+
+repositories {
+  mavenCentral()
+}
+
+version = '0.0.1-SNAPSHOT'
+description = 'test-docker-spring-boot'
+group = 'com.test'
+
+java.sourceCompatibility = JavaVersion.VERSION_11
+
+jar {
+	enabled = false
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
