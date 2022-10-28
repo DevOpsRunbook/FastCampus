@@ -35,7 +35,7 @@ jib {
   }
   to {
     image = '<Docker Hub Repository URL>'
-    tags = ['1.0']
+    tags = ['<TAG Name>']
   }
   container {
     entrypoint = ['java', '-Dspring.profiles.active=test', '-jar', 'test-docker-spring-boot-0.0.1-SNAPSHOT.jar']

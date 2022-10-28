@@ -5,6 +5,7 @@
 > https://www.docker.com/products/docker-desktop/
 
 (2) 다운로드한 .dmg 파일을 실행하여 Docker.app을 응용 프로그램으로 복사해줍니다.
+
 (3) 애플리케이션을 실행하면 메뉴 막대 상단에 아이콘이 생성됩니다. 또한 터미널에서 docker 명령어를 통해 정상적으로 설치된 것을 확인할 수 있습니다.
 ```
 $ docker version
