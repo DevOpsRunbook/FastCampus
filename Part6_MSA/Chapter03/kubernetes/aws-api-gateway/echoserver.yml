@@ -26,7 +26,7 @@ metadata:
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb-ip"
     service.beta.kubernetes.io/aws-load-balancer-internal: "true"
-    service.beta.kubernetes.io/aws-load-balancer-subnets: subnet-0dca11143b642608f, subnet-062d842b851215642
+    service.beta.kubernetes.io/aws-load-balancer-subnets: <Subnet ID 목록>
 spec:
   ports:
     - port: 80

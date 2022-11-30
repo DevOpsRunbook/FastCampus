@@ -13,8 +13,8 @@ spec:
         app: product-composite
     spec:
       containers:
-        - name: comp
-          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/product-composite:1.0
+        - name: product-composite
+          image: <AWS ECR URL 주소>/product-composite-service:1.0
           imagePullPolicy: Always
           env:
             - name: SPRING_PROFILES_ACTIVE

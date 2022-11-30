@@ -1,0 +1,58 @@
+plugins {
+  id 'java'
+  id 'org.springframework.boot' version '2.7.1'
+  id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+  id 'com.google.cloud.tools.jib' version '3.3.1'
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.1'
+  implementation 'org.springframework.boot:spring-boot-starter-web:2.7.1'
+  developmentOnly 'org.springframework.boot:spring-boot-devtools:2.7.1'
+}
+
+repositories {
+  maven {
+    url "http://<Nexus Private IP>:8081/repository/<nexus artifact repository Name>"
+    allowInsecureProtocol true
+  }
+
+}
+
+version = '0.0.1-SNAPSHOT'
+description = 'test-docker-spring-boot'
+group = 'com.test'
+
+java.sourceCompatibility = JavaVersion.VERSION_11
+
+jar {
+  enabled = false
+}
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+
+jib {
+  from {
+    image = "<Nexus Private IP>:5443/<Nexus Repository Name>:<Image Tag Name>"
+  }
+  container {
+    entrypoint = ['java', '-Dspring.profiles.active=test', '-jar', 'test-docker-spring-boot-0.0.1-SNAPSHOT.jar']
+    jvmFlags = ['-Xms512m', '-Xmx512m', '-Xdebug', '-XshowSettings:vm', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseContainerSupport']
+	ports = ['8080']
+
+    environment = [SPRING_OUTPUT_ANSI_ENABLED: "ALWAYS"]
+    labels = [version:project.version, name:project.name, group:project.group]
+
+    creationTime = 'USE_CURRENT_TIMESTAMP'
+    format = 'Docker'
+  }
+  extraDirectories {
+    paths {
+      path {
+        from = file('build/libs')
+      }
+    }
+  }
+}

@@ -1,15 +1,14 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.6.2'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'com.google.cloud.tools.jib' version '3.1.4'
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+    id 'com.google.cloud.tools.jib' version '3.3.1'
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.1'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.1'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools:2.7.1'
 }
 
 repositories {
@@ -30,10 +29,6 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-test {
-    useJUnitPlatform()
-}
-
 jib {
     from {
         image = 'adoptopenjdk/openjdk11:alpine-jre'
@@ -41,7 +36,7 @@ jib {
     allowInsecureRegistries = true
     container {
         entrypoint = ['java', '-Dspring.profiles.active=test', '-jar', 'test-docker-spring-boot-0.0.1-SNAPSHOT.jar']
-        // mainClass = 'com.test.StartApplication'
+
         jvmFlags = ['-Xms512m', '-Xmx512m', '-Xdebug', '-XshowSettings:vm', '-XX:+UnlockExperimentalVMOptions', '-XX:+UseContainerSupport']
         ports = ['8080']
 

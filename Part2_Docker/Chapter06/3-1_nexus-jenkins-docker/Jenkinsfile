@@ -6,7 +6,7 @@ def deployHost="<Deploy VM의 프라이빗 IP DNS 이름>"
 def tagName="1.0"
 def nexusid="<Nexus 접근 계정명>"
 def nexuspw="<Nexus 접근 비밀번호>"
-
+def jenkins_ip="<Jenkins VM의 프라이빗 IP DNS 이름>"
 
 pipeline {
     agent any
@@ -38,18 +38,11 @@ pipeline {
             steps {
                 script {
                     try {
-                        jenkins_ip = sh(script: "docker inspect -f '{{ .NetworkSettings.IPAddress }}' jenkins", returnStdout: true).trim()
                         clair_ip = sh(script: "docker inspect -f '{{ .NetworkSettings.IPAddress }}' clair", returnStdout: true).trim()
                         sh """
-                            apt update
-                            apt install -y wget
                             docker pull ${nexusUrl}/${repository}:${tagName}
-                            wget https://github.com/arminc/clair-scanner/releases/download/v12/clair-scanner_linux_amd64
-                            chmod +x clair-scanner_linux_amd64
-                            mv clair-scanner_linux_amd64 /usr/local/bin/clair-scanner
+                            clair-scanner --ip ${jenkins_ip} --clair='http://${clair_ip}:6060' --log='clair.log' --report='report.txt' ${nexusUrl}/${repository}:${tagName}
                         """
-                        sh "clair-scanner --ip ${jenkins_ip} --clair='http://${clair_ip}:6060' --log='clair.log' \
-                                --report='report.txt' ${nexusUrl}/${repository}:${tagName}"
                     } catch (err) {
                         echo err.getMessage()
                     }

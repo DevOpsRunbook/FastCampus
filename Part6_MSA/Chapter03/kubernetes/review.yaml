@@ -13,8 +13,8 @@ spec:
         app: review
     spec:
       containers:
-        - name: pro
-          image: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/review:1.0
+        - name: review
+          image: <AWS ECR URL 주소>/review-service:1.0
           imagePullPolicy: Always
           env:
             - name: SPRING_PROFILES_ACTIVE

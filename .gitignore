@@ -36,3 +36,24 @@ out/
 
 ### VS Code ###
 .vscode/
+
+.git
+
+# Local .terraform directories
+**/.terraform/*
+**/.terraform.*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Compiled files
+*.tfstate.backup
+*.tfstate.lock.info
+
+# logs
+*.log
+
+# Directories
+.terraform/
+.vagrant/
