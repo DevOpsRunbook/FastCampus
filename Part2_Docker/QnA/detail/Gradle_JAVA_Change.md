@@ -27,6 +27,7 @@ $ sudo dpkg -i jdk-17_linux-x64_bin.deb
 
 
 (3) Gradle을 사용하는 Linux OS의 JAVA를 OpenJDK가 아닌 Oracle JAVA SE 17 버전으로 변경
+> 여기서는 명령어 실행후, Oracle JAVA SE 17 버전이 있는 selection Number를 입력후, Enter를 누르면 해당 JAVA로 적용이 된다.
 ```
 $ sudo update-alternatives --config java
 ```
