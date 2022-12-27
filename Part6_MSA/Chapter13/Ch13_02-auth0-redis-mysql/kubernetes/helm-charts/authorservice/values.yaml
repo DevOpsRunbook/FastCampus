@@ -10,7 +10,7 @@ image:
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""경
+fullnameOverride: ""
 
 podAnnotations: {}
 
