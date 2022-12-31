@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: 668650199842.dkr.ecr.ap-northeast-2.amazonaws.com/authorservice
   pullPolicy: IfNotPresent
-  tag: "3.0"
+  tag: "4.0"
 
 imagePullSecrets: []
 nameOverride: ""
