@@ -37,5 +37,5 @@ configmap:
   cache-url: "redis"
 
 secret:
-  password: "cGFzc3dvcmQK"
+  password: "QWJjZDEyMzQh"
   username: "cm9vdAo="
