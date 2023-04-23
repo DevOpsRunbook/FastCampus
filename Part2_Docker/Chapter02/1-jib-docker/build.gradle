@@ -34,8 +34,8 @@ jib {
     image = 'adoptopenjdk/openjdk11:alpine-jre'
   }
   to {
-    image = '<Docker Hub Repository URL>'
-    tags = ['<TAG Name>']
+    image = 'shark2020/jib-test'
+    tags = ['1.0']
   }
   container {
     entrypoint = ['java', '-Dspring.profiles.active=test', '-jar', 'test-docker-spring-boot-0.0.1-SNAPSHOT.jar']
