@@ -33,10 +33,9 @@ jib {
     from {
         image = 'adoptopenjdk/openjdk11:alpine-jre'
         platforms {
-            platform {
                 architecture = "arm64"
                 os = "linux"
-            }
+        }
     }
     container {
 
