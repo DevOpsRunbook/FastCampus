@@ -14,7 +14,11 @@ dependencies {
 repositories {
 //  mavenCentral()
     maven {
-        url "http://<Nexus Private IP>:8081/repository/<nexus artifact repository Name>"
+        credentials {
+            username "test"
+            password "92Wns98thf!"
+        }
+        url "http://localhost:8081/repository/test-docker-nexus-repository1"
         allowInsecureProtocol true
     }
 
@@ -40,11 +44,21 @@ test {
 
 jib {
     from {
-        image = 'adoptopenjdk/openjdk11:alpine-jre'
+        image = 'adoptopenjdk/openjdk11:jdk-11.0.19_7-slim'
+        platforms {
+            platform {
+                architecture = 'amd64'
+                os = 'linux'
+            }
+            platform {
+                architecture = 'arm64'
+                os = 'linux'
+            }
+        }
     }
     to {
-        image = '<AWS ECR URL>/<Image Repository Name>'
-        tags = ['<Image Tag Name>']
+        image = '791982309231.dkr.ecr.ap-northeast-2.amazonaws.com/test'
+        tags = ['2.0']
     }
     container {
         entrypoint = ['java', '-Dspring.profiles.active=test', '-jar', 'test-docker-spring-boot-0.0.1-SNAPSHOT.jar']
