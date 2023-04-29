@@ -31,7 +31,21 @@ tasks.withType(JavaCompile) {
 
 jib {
     from {
-        image = 'adoptopenjdk/openjdk11:alpine-jre'
+        image = 'adoptopenjdk/openjdk11:jdk-11.0.19_7-slim'
+        platforms {
+            platform {
+                architecture = 'amd64'
+                os = 'linux'
+            }
+            platform {
+                architecture = 'arm64'
+                os = 'linux'
+            }
+        }
+    }
+    to  {
+        image= 'localhost:5010/test'
+        tags = ['1.0']
     }
     allowInsecureRegistries = true
     container {
