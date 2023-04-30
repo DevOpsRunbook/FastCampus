@@ -58,27 +58,27 @@ pipeline {
 
 		stage('Docker Build') {
             steps {
-                script {
+//                 script {
                     dir(path: "${directoryPath}/container"){
                         container('docker-client') {
-                            image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
-                            // sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
+//                             image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
+                            sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
                         }
                     }
-                }
+//                 }
             }
 		}
 
 		stage('ECR Push') {
 		    steps {
-		        script {
+		        //script {
                     container('docker-client') {
-                        docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
-                            image.push()
-                            // sh 'docker push "${awsECRURL}:${imageTag}"'
-                        }
+                    //    docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
+                    //        image.push()
+                            sh 'docker push "${awsECRURL}:${imageTag}"'
+                    //    }
                     }
-		        }
+		        //}
 		    }
 		}
 
