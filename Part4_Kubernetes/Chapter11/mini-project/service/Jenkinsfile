@@ -18,7 +18,7 @@ podTemplate(yaml: '''
                   emptyDir: {}
                 containers:
                 - name: docker
-                  image: docker
+                  image: docker:23.0.5-git
                   readinessProbe:
                     exec:
                       command: [sh, -c, "ls -S /var/run/docker.sock"]
@@ -30,7 +30,7 @@ podTemplate(yaml: '''
                   - name: docker-socket
                     mountPath: /var/run
                 - name: docker-daemon
-                  image: docker:dind
+                  image: docker:23.0.5-dind
                   securityContext:
                     privileged: true
                   volumeMounts:
@@ -69,23 +69,6 @@ podTemplate(yaml: '''
 
         stage('Deploy'){
             container('docker'){
-//                 checkout(
-//                     [
-//                         $class: 'GitSCM',
-//                         extensions: scm.extensions,
-//                         branches: [
-//                             [
-//                                 name: "*/${branch}"
-//                             ]
-//                         ],
-//                         userRemoteConfigs: [
-//                             [
-//                                 url: "${githubSSHURL}",
-//                                 credentialsId: "${githubKey}",
-//                             ]
-//                         ]
-//                     ]
-//                 )
 
                 dir(path: "${directoryPath}/helm-charts") {
 
