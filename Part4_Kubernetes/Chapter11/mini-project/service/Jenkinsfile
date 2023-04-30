@@ -1,127 +1,164 @@
-def awsECRURL="347880001135.dkr.ecr.ap-northeast-2.amazonaws.com/test"
-def awsKey="aws-key"
-def awsRegion="ap-northeast-2"
-def branch="master"
-def commitMsg="mini-project"
-def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
-def githubEmail="skwjdgh1@gmail.com"
-def githubKey="github-key"
-def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
-def imageTag="green"
-
-podTemplate(
-  cloud: 'kubernetes',
-  label: 'docker-build',
-  containers: [
-    containerTemplate(
-      name: 'docker-client',
-      image: 'docker:19.03.1',
-      command: 'sleep',
-      args: '99d',
-      ttyEnabled: true,
-      envVars: [
-          envVar(
-              key: 'DOCKER_HOST',
-              value: 'tcp://localhost:2375'
-          )
-      ]
-    ),
-    containerTemplate(
-      name: 'docker-daemon',
-      image: 'docker:19.03.1-dind',
-      command: 'sleep',
-      args: '99d',
-      ttyEnabled: true,
-      envVars: [
-          envVar(
-              key: 'DOCKER_TLS_CERTDIR',
-              value: ''
-          )
-      ]
-    ),
-    containerTemplate(
-      name: 'argo',
-      image: 'argoproj/argo-cd-ci-builder:latest',
-      command: 'sleep',
-      args: '99d',
-      ttyEnabled: true
-    ),
-  ],
-  volumes: [
-    hostPathVolume(
-        mountPath: '/var/run/docker.sock',
-        hostPath: '/var/run/docker.sock'
-    )
-  ]
-)
-{
-    node('docker-build') {
-
-        stage('Checkout') {
-
-            container('docker-client'){
-                checkout scm
-            }
-
-        }
-
-        stage('Docker Build') {
-
-            dir(path: "${directoryPath}/container"){
-                container('docker-client') {
-                    image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
-                    //sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
-                }
-            }
-
-        }
-
-        stage('ECR Push') {
-
-            container('docker-client') {
-                docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
-                    image.push()
-                //    sh 'docker push "${awsECRURL}:${imageTag}"'
-                }
-            }
-
-        }
-
-        stage('Deploy'){
-            container('argo'){
-                checkout(
-                    [
-                        $class: 'GitSCM',
-                        extensions: scm.extensions,
-                        branches: [
-                            [
-                                name: "*/${branch}"
-                            ]
-                        ],
-                        userRemoteConfigs: [
-                            [
-                                url: "${githubSSHURL}",
-                                credentialsId: "${githubKey}",
-                            ]
-                        ]
-                    ]
-                )
-                sshagent(credentials: ["${githubKey}"]){
-                    sh("""
-                        #!/usr/bin/env bash
-                        set +x
-                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                        git config --global user.email ${githubEmail}
-                        git checkout ${branch}
-                        cd ${directoryPath}/helm-charts
-                        sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
-                        cd ../../../../
-                        git commit -a -m ${commitMsg}
-                        git remote set-url origin ${githubSSHURL}
-                        git push -u origin master
-                    """)
-                }
-            }
-        }
+podTemplate(yaml: '''
+              apiVersion: v1
+              kind: Pod
+              spec:
+                volumes:
+                - name: docker-socket
+                  emptyDir: {}
+                containers:
+                - name: docker
+                  image: docker:19.03.1
+                  readinessProbe:
+                    exec:
+                      command: [sh, -c, "ls -S /var/run/docker.sock"]
+                  command:
+                  - sleep
+                  args:
+                  - 99d
+                  volumeMounts:
+                  - name: docker-socket
+                    mountPath: /var/run
+                - name: docker-daemon
+                  image: docker:19.03.1-dind
+                  securityContext:
+                    privileged: true
+                  volumeMounts:
+                  - name: docker-socket
+                    mountPath: /var/run
+''') {
+  node(POD_LABEL) {
+    writeFile file: 'Dockerfile', text: 'FROM scratch'
+    container('docker') {
+      sh 'docker version && DOCKER_BUILDKIT=1 docker build --progress plain -t testing .'
     }
+  }
 }
+
+
+// def awsECRURL="347880001135.dkr.ecr.ap-northeast-2.amazonaws.com/test"
+// def awsKey="aws-key"
+// def awsRegion="ap-northeast-2"
+// def branch="master"
+// def commitMsg="mini-project"
+// def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
+// def githubEmail="skwjdgh1@gmail.com"
+// def githubKey="github-key"
+// def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
+// def imageTag="green"
+//
+// podTemplate(
+//   cloud: 'kubernetes',
+//   label: 'docker-build',
+//   containers: [
+//     containerTemplate(
+//       name: 'docker-client',
+//       image: 'docker:19.03.1',
+//       command: 'sleep',
+//       args: '99d',
+//       ttyEnabled: true,
+//       envVars: [
+//           envVar(
+//               key: 'DOCKER_HOST',
+//               value: 'tcp://localhost:2375'
+//           )
+//       ]
+//     ),
+//     containerTemplate(
+//       name: 'docker-daemon',
+//       image: 'docker:19.03.1-dind',
+//       command: 'sleep',
+//       args: '99d',
+//       ttyEnabled: true,
+//       envVars: [
+//           envVar(
+//               key: 'DOCKER_TLS_CERTDIR',
+//               value: ''
+//           )
+//       ]
+//     ),
+//     containerTemplate(
+//       name: 'argo',
+//       image: 'argoproj/argo-cd-ci-builder:latest',
+//       command: 'sleep',
+//       args: '99d',
+//       ttyEnabled: true
+//     ),
+//   ],
+//   volumes: [
+//     hostPathVolume(
+//         mountPath: '/var/run/containerd/containerd.sock',
+//         hostPath: '/var/run/containerd/containerd.sock'
+//     )
+//   ]
+// )
+// {
+//     node('docker-build') {
+//
+//         stage('Checkout') {
+//
+//             container('docker-client'){
+//                 checkout scm
+//             }
+//
+//         }
+//
+//         stage('Docker Build') {
+//
+//             dir(path: "${directoryPath}/container"){
+//                 container('docker-client') {
+//                     image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
+//                     //sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
+//                 }
+//             }
+//
+//         }
+//
+//         stage('ECR Push') {
+//
+//             container('docker-client') {
+//                 docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
+//                     image.push()
+//                 //    sh 'docker push "${awsECRURL}:${imageTag}"'
+//                 }
+//             }
+//
+//         }
+//
+//         stage('Deploy'){
+//             container('argo'){
+//                 checkout(
+//                     [
+//                         $class: 'GitSCM',
+//                         extensions: scm.extensions,
+//                         branches: [
+//                             [
+//                                 name: "*/${branch}"
+//                             ]
+//                         ],
+//                         userRemoteConfigs: [
+//                             [
+//                                 url: "${githubSSHURL}",
+//                                 credentialsId: "${githubKey}",
+//                             ]
+//                         ]
+//                     ]
+//                 )
+//                 sshagent(credentials: ["${githubKey}"]){
+//                     sh("""
+//                         #!/usr/bin/env bash
+//                         set +x
+//                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+//                         git config --global user.email ${githubEmail}
+//                         git checkout ${branch}
+//                         cd ${directoryPath}/helm-charts
+//                         sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
+//                         cd ../../../../
+//                         git commit -a -m ${commitMsg}
+//                         git remote set-url origin ${githubSSHURL}
+//                         git push -u origin master
+//                     """)
+//                 }
+//             }
+//         }
+//     }
+// }
