@@ -36,12 +36,12 @@ podTemplate(yaml: '''
                   volumeMounts:
                   - name: docker-socket
                     mountPath: /var/run
-                - name: argocd
-                  image: argoproj/argocd:latest
+                - name: yq
+                  image: linuxserver/yq:latest
                   command:
-                  - sleep
+                  - cat
                   args:
-                  - 99d
+                  - ""
 ''')
 {
     node(POD_LABEL) {
@@ -75,19 +75,19 @@ podTemplate(yaml: '''
         }
 
         stage('Deploy'){
-            container('argocd'){
-                dir('DEPLOY') {
-                    sshagent(credentials: ["${githubKey}"]) {
-                        sh ("""
-                            git clone -b ${branch} ${githubSSHURL}
-                            cd devops
-                            git pull origin ${branch} --allow-unrelated-histories
-                            sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
-                            git add ${directoryPath}/helm-charts/values.yaml
-                            git commit -m ${commitMsg}
-                            git push -u origin ${branch}
-                        """)
-                    }
+            container('yq'){
+                dir('~/') {
+                    git branch: "${branch}",
+                        credentialsId: ${githubKey},
+                        url: "${githubSSHURL}"
+
+                    sh ("""
+                        sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+                        git add ${directoryPath}/helm-charts/values.yaml
+                        git commit -m ${commitMsg}
+                        git push -u origin ${branch}
+                    """)
+
                 }
             }
         }
