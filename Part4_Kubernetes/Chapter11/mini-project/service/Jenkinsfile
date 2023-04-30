@@ -10,24 +10,26 @@ def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
 def imageTag="red"
 
 podTemplate(label: 'docker-build',
-  containers: [
-    containerTemplate(
-        name: 'docker',
-        image: 'docker:dind',
-        ttyEnabled: true,
-        command: 'cat'
-    ),
-    containerTemplate(
-      name: 'argo',
-      image: 'argoproj/argo-cd-ci-builder:latest',
-      ttyEnabled: true,
-      command: 'cat'
-    ),
-  ],
-  volumes: [ 
-    hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
-  ]
-) {
+yaml: """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:1.11
+    command: ['cat']
+    tty: true
+    volumeMounts:
+    - name: dockersock
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: dockersock
+    hostPath:
+      path: /var/run/docker.sock
+"""
+  ) {
+
+  def image = "jenkins/jnlp-slave"
   node('docker-build') {
 
 		stage('Checkout') {
@@ -38,6 +40,7 @@ podTemplate(label: 'docker-build',
 
 		stage('Docker Build') {
 			dir(path: "${directoryPath}/container"){
+			    git 'https://github.com/jenkinsci/docker-jnlp-slave.git'
 				container('docker') {
 					image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
 				}
