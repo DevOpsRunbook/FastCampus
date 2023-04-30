@@ -13,21 +13,20 @@ podTemplate(label: 'docker-build', serviceAccount: "jenkins", namespace: "jenkin
   containers: [
     containerTemplate(
       name: 'docker',
-      image: 'docker:19.03.11',
+      image: 'docker:20.10.7',
       ttyEnabled: true,
-      command: 'cat',
-      privileged: true
+      command: 'cat'
     ),
     containerTemplate(
       name: 'argo',
       image: 'argoproj/argo-cd-ci-builder:latest',
       ttyEnabled: true,
-      command: 'cat',
-      privileged: true
+      command: 'cat'
     ),
   ],
   volumes: [ 
-    hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+    //hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+    hostPathVolume(hostPath: '/etc/hosts', mountPath: '/etc/hosts')
   ]
 ) {
   node('docker-build') {
