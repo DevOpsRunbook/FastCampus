@@ -49,6 +49,7 @@ podTemplate(yaml: '''
         stage('Checkout') {
 
             container('docker'){
+                sh "rm -rf /home/jenkins/agent/workspace/*"
                 checkout scm
             }
 
