@@ -75,12 +75,12 @@ podTemplate(yaml: '''
                         url: "${githubSSHURL}"
 
                     sh("""
-                        set +x
-                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                        mkdir -p ~/.ssh
+                        ssh-keyscan github.com >> ~/.ssh/known_hosts
                         git config --global user.email ${githubEmail}
                         git config --global --add safe.directory /home/jenkins/agent/workspace/mini-project/DEPLOY
-                        ssh-keyscan github.com >> ~/.ssh/known_hosts
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+                        git add --all
                         git commit -a -m ${commitMsg}
                         git remote set-url origin ${githubSSHURL}
                         git push -u origin ${branch}
