@@ -9,21 +9,35 @@ def githubKey="github-key"
 def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
 def imageTag="green"
 
-podTemplate(label: 'docker-build',
+podTemplate(
+  cloud: 'kubernetes',
+  label: 'docker-build',
   containers: [
     containerTemplate(
       name: 'docker-client',
-      image: 'docker:latest',
+      image: 'docker:19.03.1',
       command: 'sleep',
       args: '99d',
-      ttyEnabled: true
+      ttyEnabled: true,
+      envVars: [
+          envVar(
+              key: 'DOCKER_HOST',
+              value: 'tcp://localhost:2375'
+          )
+      ]
     ),
     containerTemplate(
       name: 'docker-daemon',
       image: 'docker:19.03.1-dind',
       command: 'sleep',
       args: '99d',
-      ttyEnabled: true
+      ttyEnabled: true,
+      envVars: [
+          envVar(
+              key: 'DOCKER_TLS_CERTDIR',
+              value: ''
+          )
+      ]
     ),
     containerTemplate(
       name: 'argo',
@@ -34,9 +48,13 @@ podTemplate(label: 'docker-build',
     ),
   ],
   volumes: [
-    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+    hostPathVolume(
+        mountPath: '/var/run/docker.sock',
+        hostPath: '/var/run/docker.sock'
+    )
   ]
-) {
+)
+{
     node('docker-build') {
 
         stage('Checkout') {
@@ -50,7 +68,7 @@ podTemplate(label: 'docker-build',
         stage('Docker Build') {
 
             dir(path: "${directoryPath}/container"){
-                container('docker-daemon') {
+                container('docker-client') {
                     image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
                     //sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
                 }
@@ -60,7 +78,7 @@ podTemplate(label: 'docker-build',
 
         stage('ECR Push') {
 
-            container('docker-daemon') {
+            container('docker-client') {
                 docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
                     image.push()
                 //    sh 'docker push "${awsECRURL}:${imageTag}"'
