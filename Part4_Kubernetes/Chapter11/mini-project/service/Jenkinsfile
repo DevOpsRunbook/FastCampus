@@ -42,7 +42,8 @@ podTemplate(yaml: '''
                   - sleep
                   args:
                   - 99d
-''') {
+''')
+{
     node(POD_LABEL) {
 
         stage('Checkout') {
@@ -75,8 +76,23 @@ podTemplate(yaml: '''
 
         stage('Deploy'){
             container('argocd'){
-                checkout([$class: 'GitSCM', extensions: scm.extensions, branches: [[name: "*/${branch}"]],
-                            userRemoteConfigs: [[url: "${githubSSHURL}", credentialsId: "${github-key}"]]])
+                checkout(
+                    [
+                        $class: 'GitSCM',
+                        extensions: scm.extensions,
+                        branches: [
+                            [
+                                name: "*/${branch}"
+                            ]
+                        ],
+                        userRemoteConfigs: [
+                            [
+                                url: "${githubSSHURL}",
+                                credentialsId: "${githubKey}",
+                            ]
+                        ]
+                    ]
+                )
 
                 sh("""
                     sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
