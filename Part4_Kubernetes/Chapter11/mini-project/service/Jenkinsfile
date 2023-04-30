@@ -69,7 +69,7 @@ podTemplate(yaml: '''
 
         stage('Deploy'){
             container('docker'){
-                dir("~/"){
+                dir("DEPLOY"){
                     git branch: 'main',
                         credentialsId: "${githubKey}",
                         url: "${githubSSHURL}"
