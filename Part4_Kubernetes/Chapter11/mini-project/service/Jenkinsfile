@@ -37,11 +37,7 @@ podTemplate(yaml: '''
                   - name: docker-socket
                     mountPath: /var/run
                 - name: argo-cd-tools
-                  image: "argoproj/argo-cd-tools:latest"
-                  command:
-                  - cat
-                  args:
-                  - ""
+                  image: argoproj/argo-cd-tools:latest
 ''') {
     node(POD_LABEL) {
 
