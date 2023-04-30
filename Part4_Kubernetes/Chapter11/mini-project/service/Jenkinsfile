@@ -69,23 +69,52 @@ podTemplate(yaml: '''
 
         stage('Deploy'){
             container('docker'){
-                dir("DEPLOY"){
-                    git branch: 'main',
-                        credentialsId: "${githubKey}",
-                        url: "${githubSSHURL}"
+                checkout(
+                    [
+                        $class: 'GitSCM',
+                        extensions: scm.extensions,
+                        branches: [
+                            [
+                                name: "*/${branch}"
+                            ]
+                        ],
+                        userRemoteConfigs: [
+                            [
+                                url: "${githubSSHURL}",
+                                credentialsId: "${githubKey}",
+                            ]
+                        ]
+                    ]
+                )
 
-                    sh("""
-                        mkdir -p ~/.ssh
-                        ssh-keyscan github.com >> ~/.ssh/known_hosts
-                        git config --global user.email ${githubEmail}
-                        git config --global --add safe.directory /home/jenkins/agent/workspace/mini-project/DEPLOY
-                        sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
-                        git add --all
-                        git commit -a -m ${commitMsg}
-                        git remote set-url origin ${githubSSHURL}
-                        git push -u origin ${branch}
-                    """)
-                }
+                sh("""
+                    git config --global user.email ${githubEmail}
+                    pwd
+                    ls -al
+                    sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+                    git add --all
+                    git commit -a -m ${commitMsg}
+                    git remote set-url origin ${githubSSHURL}
+                    git push -u origin ${branch}
+                """)
+
+//                 dir("DEPLOY"){
+//                     git branch: 'main',
+//                         credentialsId: "${githubKey}",
+//                         url: "${githubSSHURL}"
+//
+//                     sh("""
+//                         mkdir -p ~/.ssh
+//                         ssh-keyscan github.com >> ~/.ssh/known_hosts
+//                         git config --global user.email ${githubEmail}
+//                         git config --global --add safe.directory /home/jenkins/agent/workspace/mini-project/DEPLOY
+//                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+//                         git add --all
+//                         git commit -a -m ${commitMsg}
+//                         git remote set-url origin ${githubSSHURL}
+//                         git push -u origin ${branch}
+//                     """)
+//                 }
             }
         }
     }
