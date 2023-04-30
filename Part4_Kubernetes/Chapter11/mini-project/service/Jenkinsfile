@@ -9,27 +9,26 @@ def githubKey="github-key"
 def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
 def imageTag="red"
 
-podTemplate(label: 'docker-build',
-yaml: """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: docker
-    image: docker:latest
-    command: ['cat']
-    tty: true
-    volumeMounts:
-    - name: dockersock
-      mountPath: /var/run/docker.sock
-  volumes:
-  - name: dockersock
-    hostPath:
-      path: /var/run/docker.sock
-"""
-  ) {
-
-  node('docker-build') {
+podTemplate(
+  containers: [
+    containerTemplate(
+      name: 'docker',
+      image: 'docker:latest',
+      command: 'sleep',
+      args: '99d'
+    ),
+    containerTemplate(
+      name: 'argo',
+      image: 'argoproj/argo-cd-ci-builder:latest',
+      command: 'sleep',
+      args: '99d'
+    ),
+  ],
+  volumes: [
+    hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')
+  ]
+) {
+  node(POD_LABEL) {
 
 		stage('Checkout') {
             container('docker'){
@@ -39,7 +38,6 @@ spec:
 
 		stage('Docker Build') {
 			dir(path: "${directoryPath}/container"){
-
 				container('docker') {
 					image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
 				}
