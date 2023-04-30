@@ -41,7 +41,7 @@ podTemplate(yaml: '''
 
         stage('Checkout') {
 
-            container('docker-client'){
+            container('docker'){
                 checkout scm
             }
 
@@ -50,7 +50,7 @@ podTemplate(yaml: '''
         stage('Docker Build') {
 
             dir(path: "${directoryPath}/container"){
-                container('docker-client') {
+                container('docker') {
                     image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
                     //sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
                 }
@@ -60,7 +60,7 @@ podTemplate(yaml: '''
 
         stage('ECR Push') {
 
-            container('docker-client') {
+            container('docker') {
                 docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
                     image.push()
                 //    sh 'docker push "${awsECRURL}:${imageTag}"'
@@ -70,7 +70,7 @@ podTemplate(yaml: '''
         }
 
         stage('Deploy'){
-            container('argo'){
+            container('docker'){
                 checkout(
                     [
                         $class: 'GitSCM',
