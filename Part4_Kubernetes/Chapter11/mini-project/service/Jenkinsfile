@@ -70,27 +70,23 @@ podTemplate(yaml: '''
         stage('Deploy'){
             container('docker'){
 
-                dir(path: "${directoryPath}/helm-charts") {
+//                dir(path: "${directoryPath}/helm-charts") {
 
-                    git branch: 'main',
-                        credentialsId: "${githubKey}",
-                        url: "${githubSSHURL}"
+                git branch: 'main',
+                    credentialsId: "${githubKey}",
+                    url: "${githubSSHURL}"
 
-                    sh("""
-                        #!/usr/bin/env bash
-                        set +x
-                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                        git config --global user.email ${githubEmail}
-                        # git checkout ${branch}
-                        # cd ${directoryPath}/helm-charts
-                        sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
-                        # cd ../../../../
-                        git commit -a -m ${commitMsg}
-                        git remote set-url origin ${githubSSHURL}
-                        git push -u origin ${branch}
-                    """)
+                sh("""
+                    set +x
+                    export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                    git config --global user.email ${githubEmail}
+                    sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+                    git commit -a -m ${commitMsg}
+                    git remote set-url origin ${githubSSHURL}
+                    git push -u origin ${branch}
+                """)
 
-                }
+//                }
             }
         }
     }
