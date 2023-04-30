@@ -29,7 +29,6 @@ spec:
 """
   ) {
 
-  def image = "jenkins/jnlp-slave"
   node('docker-build') {
 
 		stage('Checkout') {
@@ -40,7 +39,7 @@ spec:
 
 		stage('Docker Build') {
 			dir(path: "${directoryPath}/container"){
-			    git 'https://github.com/jenkinsci/docker-jnlp-slave.git'
+
 				container('docker') {
 					image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
 				}
