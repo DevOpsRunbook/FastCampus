@@ -36,6 +36,12 @@ podTemplate(yaml: '''
                   volumeMounts:
                   - name: docker-socket
                     mountPath: /var/run
+                - name: argo-cd-tools
+                  image: "argoproj/argo-cd-tools:latest"
+                  command:
+                  - cat
+                  args:
+                  - ""
 ''') {
     node(POD_LABEL) {
 
@@ -68,30 +74,12 @@ podTemplate(yaml: '''
         }
 
         stage('Deploy'){
-            container('docker'){
-                checkout(
-                    [
-                        $class: 'GitSCM',
-                        extensions: scm.extensions,
-                        branches: [
-                            [
-                                name: "*/${branch}"
-                            ]
-                        ],
-                        userRemoteConfigs: [
-                            [
-                                url: "${githubSSHURL}",
-                                credentialsId: "${githubKey}",
-                            ]
-                        ]
-                    ]
-                )
+            container('argo-cd-tools'){
                 sshagent(credentials: ["${githubKey}"]){
                     sh("""
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
                         git init
                         git remote add origin ${githubSSHURL}
-                        git config --global --add safe.directory /home/jenkins/agent/workspace/mini-project
                         git branch -M ${branch}
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
                         git add ${directoryPath}/helm-charts/values.yaml
