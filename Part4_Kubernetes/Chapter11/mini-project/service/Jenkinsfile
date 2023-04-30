@@ -86,37 +86,21 @@ podTemplate(yaml: '''
                         ]
                     ]
                 )
+                sshagent(credentials: ["${githubKey}"]){
+                    sh("""
+                        #!/usr/bin/env bash
+                        set +x
+                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                        git config --global user.email ${githubEmail}
+                        git checkout ${branch}
+                        sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+                        git add --all
+                        git commit -a -m ${commitMsg}
+                        git remote set-url origin ${githubSSHURL}
+                        git push -u origin ${branch}
+                    """)
 
-                sh("""
-                    #!/usr/bin/env bash
-                    set +x
-                    export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                    git config --global user.email ${githubEmail}
-                    git checkout ${branch}
-                    sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
-                    git add --all
-                    git commit -a -m ${commitMsg}
-                    git remote set-url origin ${githubSSHURL}
-                    git push -u origin ${branch}
-                """)
-
-//                 dir("DEPLOY"){
-//                     git branch: 'main',
-//                         credentialsId: "${githubKey}",
-//                         url: "${githubSSHURL}"
-//
-//                     sh("""
-//                         mkdir -p ~/.ssh
-//                         ssh-keyscan github.com >> ~/.ssh/known_hosts
-//                         git config --global user.email ${githubEmail}
-//                         git config --global --add safe.directory /home/jenkins/agent/workspace/mini-project/DEPLOY
-//                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
-//                         git add --all
-//                         git commit -a -m ${commitMsg}
-//                         git remote set-url origin ${githubSSHURL}
-//                         git push -u origin ${branch}
-//                     """)
-//                 }
+                }
             }
         }
     }
