@@ -60,7 +60,8 @@ pipeline {
             steps {
                 dir(path: "${directoryPath}/container"){
                     container('docker-client') {
-                        image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
+                        // image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
+                        sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
                     }
                 }
             }
@@ -71,7 +72,8 @@ pipeline {
 		    steps {
                 container('docker-client') {
                     docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
-                        image.push()
+                        // image.push()
+                        sh 'docker push "${awsECRURL}:${imageTag}"'
                     }
                 }
 		    }
