@@ -38,6 +38,10 @@ podTemplate(yaml: '''
                     mountPath: /var/run
                 - name: argo-cd-tools
                   image: argoproj/argo-cd-tools:latest
+                  command:
+                  - cat
+                  args:
+                  - ''
 ''') {
     node(POD_LABEL) {
 
