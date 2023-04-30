@@ -78,6 +78,9 @@ podTemplate(yaml: '''
                         set +x
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
                         git config --global user.email ${githubEmail}
+                        git config --global --add safe.directory /home/jenkins/agent/workspace/mini-project/DEPLOY
+                        pwd
+                        ls -al
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
                         git commit -a -m ${commitMsg}
                         git remote set-url origin ${githubSSHURL}
