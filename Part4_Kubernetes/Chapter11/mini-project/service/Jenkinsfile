@@ -49,7 +49,6 @@ podTemplate(yaml: '''
         stage('Checkout') {
 
             container('docker'){
-                sh "rm -rf /home/jenkins/agent/workspace/*"
                 checkout scm
             }
 
@@ -99,6 +98,7 @@ podTemplate(yaml: '''
                         #!/usr/bin/env bash
                         set +x
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                        rm -rf /home/jenkins/agent/workspace/mini-project@tmp
                         git config --global user.email ${githubEmail}
                         git checkout ${branch}
                         cd ${directoryPath}/helm-charts
