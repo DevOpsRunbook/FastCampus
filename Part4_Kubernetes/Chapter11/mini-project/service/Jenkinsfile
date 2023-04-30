@@ -78,6 +78,8 @@ podTemplate(yaml: '''
                 sshagent(credentials: ["${githubKey}"]){
                     sh("""
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                        [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
+                        ssh-keyscan -t rsa,dsa example.com >> ~/.ssh/known_hosts
                         git init
                         git remote add origin ${githubSSHURL}
                         git branch -M ${branch}
