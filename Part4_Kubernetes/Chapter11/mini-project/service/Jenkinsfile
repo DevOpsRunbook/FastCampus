@@ -18,7 +18,7 @@ podTemplate(yaml: '''
                   emptyDir: {}
                 containers:
                 - name: docker
-                  image: docker:23.0.5-git
+                  image: docker
                   readinessProbe:
                     exec:
                       command: [sh, -c, "ls -S /var/run/docker.sock"]
@@ -30,7 +30,7 @@ podTemplate(yaml: '''
                   - name: docker-socket
                     mountPath: /var/run
                 - name: docker-daemon
-                  image: docker:23.0.5-dind
+                  image: docker:dind
                   securityContext:
                     privileged: true
                   volumeMounts:
@@ -88,7 +88,7 @@ podTemplate(yaml: '''
 //                 )
 
                 dir(path: "${directoryPath}/helm-charts") {
-                    withCredentials([file(credentialsId: '${githubKey}', variable: 'GIT_DEPLOY_KEY')]) {
+                    withCredentials([file(credentialsId: "${githubKey}", variable: 'GIT_DEPLOY_KEY')]) {
 
                         sh("""
                             #!/usr/bin/env bash
