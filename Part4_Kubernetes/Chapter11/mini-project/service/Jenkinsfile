@@ -33,23 +33,21 @@ podTemplate(label: 'docker-build',
     ),
   ],
   volumes: [
-    hostPathVolume(mountPath: '/var/lib/docker', hostPath: '/tmp'),
+    hostPathVolume(mountPath: '/var/lib/docker', hostPath: '/tmp')
   ]
 ) {
-  node('docker-build') {
+    node('docker-build') {
 
-    stages {
-
-		stage('Checkout') {
-		    steps {
+        stage('Checkout') {
+            steps {
                 container('docker-client'){
                     checkout scm
                 }
-		    }
+            }
 
-		}
+        }
 
-		stage('Docker Build') {
+        stage('Docker Build') {
             steps {
                 dir(path: "${directoryPath}/container"){
                     container('docker-client') {
@@ -58,18 +56,18 @@ podTemplate(label: 'docker-build',
                     }
                 }
             }
-		}
+        }
 
-		stage('ECR Push') {
-		    steps {
+        stage('ECR Push') {
+            steps {
                 container('docker-client') {
                     docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
                         image.push()
                     //    sh 'docker push "${awsECRURL}:${imageTag}"'
                     }
                 }
-		    }
-		}
+            }
+        }
 
         stage('Deploy'){
             container('argo'){
@@ -107,5 +105,5 @@ podTemplate(label: 'docker-build',
                 }
             }
         }
-	}
+    }
 }
