@@ -17,6 +17,8 @@ podTemplate(yaml: '''
                 - name: docker-socket
                   emptyDir: {}
                 containers:
+                - name: argo
+                  image: "argoproj/argo-cd-ci-builder:latest"
                 - name: docker
                   image: docker:19.03.1
                   readinessProbe:
@@ -36,10 +38,6 @@ podTemplate(yaml: '''
                   volumeMounts:
                   - name: docker-socket
                     mountPath: /var/run
-                - name: argo
-                  image: argoproj/argo-cd-ci-builder:latest
-                  securityContext:
-                    privileged: true
 ''') {
     node(POD_LABEL) {
 
