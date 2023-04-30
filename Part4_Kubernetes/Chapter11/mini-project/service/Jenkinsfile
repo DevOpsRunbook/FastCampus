@@ -75,19 +75,16 @@ podTemplate(yaml: '''
 
         stage('Deploy'){
             container('argocd'){
-                withCredentials([[$class: 'SSHUserPrivateKeyBinding', credentialsId: "${githubKey}", keyFileVariable: 'SSH_PRIVATE_KEY', passphraseVariable: '', usernameVariable: 'SSH_USERNAME']]){
-                    sh("""
-                        ssh-agent /bin/bash
-                        eval \$(ssh-agent) && ssh-add ${SSH_PRIVATE_KEY}
-                        git init
-                        git remote add origin ${githubSSHURL}
-                        git branch -M ${branch}
-                        sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
-                        git add ${directoryPath}/helm-charts/values.yaml
-                        git commit -m ${commitMsg}
-                        git push -u origin ${branch}
-                    """)
-                }
+                checkout([$class: 'GitSCM', branches: [[name: "${branch}"]],
+                    userRemoteConfigs: [[url: "${githubSSHURL}",
+                    credentialsId: "${github-key}"]]])
+
+                sh("""
+                    sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+                    git add ${directoryPath}/helm-charts/values.yaml
+                    git commit -m ${commitMsg}
+                    git push -u origin ${branch}
+                """)
             }
         }
     }
