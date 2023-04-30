@@ -89,13 +89,13 @@ podTemplate(yaml: '''
                 sshagent(credentials: ["${githubKey}"]){
                     sh("""
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                        git config --global user.email ${githubEmail}
+                        git init
+                        git remote add origin ${githubSSHURL}
+                        git branch -M ${branch}
                         git config --global --add safe.directory /home/jenkins/agent/workspace/mini-project
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
                         git add ${directoryPath}/helm-charts/values.yaml
-                        git commit -a -m ${commitMsg}
-                        git branch -m ${branch}
-                        git remote set-url origin ${githubSSHURL}
+                        git commit -m ${commitMsg}
                         git push -u origin ${branch}
                     """)
 
