@@ -69,37 +69,42 @@ podTemplate(yaml: '''
 
         stage('Deploy'){
             container('docker'){
-                checkout(
-                    [
-                        $class: 'GitSCM',
-                        extensions: scm.extensions,
-                        branches: [
-                            [
-                                name: "*/${branch}"
-                            ]
-                        ],
-                        userRemoteConfigs: [
-                            [
-                                url: "${githubSSHURL}",
-                                credentialsId: "${githubKey}",
-                            ]
-                        ]
-                    ]
-                )
+//                 checkout(
+//                     [
+//                         $class: 'GitSCM',
+//                         extensions: scm.extensions,
+//                         branches: [
+//                             [
+//                                 name: "*/${branch}"
+//                             ]
+//                         ],
+//                         userRemoteConfigs: [
+//                             [
+//                                 url: "${githubSSHURL}",
+//                                 credentialsId: "${githubKey}",
+//                             ]
+//                         ]
+//                     ]
+//                 )
 
-                sh("""
-                    #!/usr/bin/env bash
-                    set +x
-                    export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                    git config --global user.email ${githubEmail}
-                    git checkout ${branch}
-                    cd ${directoryPath}/helm-charts
-                    sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
-                    cd ../../../../
-                    git commit -a -m ${commitMsg}
-                    git remote set-url origin ${githubSSHURL}
-                    git push -u origin ${branch}
-                """)
+                dir(path: "${directoryPath}/helm-charts") {
+                    withCredentials([file(credentialsId: '${githubKey}', variable: 'GIT_DEPLOY_KEY')]) {
+
+                        sh("""
+                            #!/usr/bin/env bash
+                            set +x
+                            export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                            git config --global user.email ${githubEmail}
+                            # git checkout ${branch}
+                            # cd ${directoryPath}/helm-charts
+                            sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
+                            # cd ../../../../
+                            git commit -a -m ${commitMsg}
+                            git remote set-url origin ${githubSSHURL}
+                            git push -u origin ${branch}
+                        """)
+                    }
+                }
             }
         }
     }
