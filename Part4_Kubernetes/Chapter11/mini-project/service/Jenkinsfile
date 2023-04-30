@@ -76,38 +76,18 @@ podTemplate(yaml: '''
 
         stage('Deploy'){
             container('argocd'){
-                checkout(
-                    [
-                        $class: 'GitSCM',
-                        extensions: scm.extensions,
-                        branches: [
-                            [
-                                name: "*/${branch}"
-                            ]
-                        ],
-                        userRemoteConfigs: [
-                            [
-                                url: "${githubSSHURL}",
-                                credentialsId: "${githubKey}",
-                            ]
-                        ]
-                    ]
-                )
-                sshagent(credentials: ["${githubKey}"]){
-                    sh("""
-                        #!/usr/bin/env bash
-                        set +x
-                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                        rm -rf /home/jenkins/agent/workspace/mini-project@tmp
-                        git config --global user.email ${githubEmail}
-                        git checkout ${branch}
-                        cd ${directoryPath}/helm-charts
-                        sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
-                        cd ../../../../
-                        git commit -a -m ${commitMsg}
-                        git remote set-url origin ${githubSSHURL}
-                        git push -u origin master
-                    """)
+                dir('DEPLOY') {
+                    sshagent(credentials: ["deployer"]) {
+                        sh ("""
+                            git clone -b ${branch} ${githubSSHURL}
+                            cd devops
+                            git pull origin ${branch} --allow-unrelated-histories
+                            sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+                            git add ${directoryPath}/helm-charts/values.yaml
+                            git commit -m ${commitMsg}
+                            git push -u origin ${branch}
+                        """)
+                    }
                 }
             }
         }
