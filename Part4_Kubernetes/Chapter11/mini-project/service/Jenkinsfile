@@ -13,7 +13,7 @@ podTemplate(label: 'docker-build',
   containers: [
     containerTemplate(
       name: 'docker',
-      image: 'docker:latest',
+      image: 'docker:20.10.12-alpine3.15',
       command: 'sleep',
       args: '99d',
       runAsUser: '0'
