@@ -237,11 +237,11 @@ controller:
   #   port: 9000
 
   # List of plugins to be install during Jenkins controller start
-  installPlugins:
-    - kubernetes:1.31.3
-    - workflow-aggregator:2.6
-    - git:4.10.2
-    - configuration-as-code:1414.v878271fc496f
+#  installPlugins:
+#    - kubernetes:1.31.3
+#    - workflow-aggregator:2.6
+#    - git:4.10.2
+#    - configuration-as-code:1414.v878271fc496f
 
   # Set to false to download the minimum required version of all dependencies.
   installLatestPlugins: true
@@ -447,9 +447,9 @@ controller:
       kubernetes.io/ingress.class: alb
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
-      alb.ingress.kubernetes.io/subnets: <Public Subnet1 ID>, <Public Subnet2 ID>
-      alb.ingress.kubernetes.io/certificate-arn: <ACM의 ARN>
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]' 
+      alb.ingress.kubernetes.io/subnets: subnet-010ebdaf2754638ac, subnet-0957e1f271907b984
+#      alb.ingress.kubernetes.io/certificate-arn: <ACM의 ARN>
+#      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
@@ -458,7 +458,7 @@ controller:
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     # path: "/jenkins"
     # configures the hostname e.g. jenkins.example.com
-    hostName: <Jenkins DNS주소명>
+    hostName: ""
     tls:
     # - secretName: jenkins.cluster.local
     #   hosts:
@@ -847,7 +847,7 @@ backup:
   schedule: "0 2 * * *"
   labels: {}
   serviceAccount:
-    create: true
+    create: false
     name:
     annotations: {}
     # Example for authorization to AWS S3 using kube2iam or IRSA
