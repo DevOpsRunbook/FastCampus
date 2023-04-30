@@ -28,7 +28,8 @@ podTemplate(label: 'docker-build',
     containerTemplate(
       name: 'argo',
       image: 'argoproj/argo-cd-ci-builder:latest',
-      command: 'cat',
+      command: 'sleep',
+      args: '99d',
       ttyEnabled: true
     ),
   ],
@@ -39,34 +40,33 @@ podTemplate(label: 'docker-build',
     node('docker-build') {
 
         stage('Checkout') {
-            steps {
-                container('docker-client'){
-                    checkout scm
-                }
+
+            container('docker-client'){
+                checkout scm
             }
 
         }
 
         stage('Docker Build') {
-            steps {
-                dir(path: "${directoryPath}/container"){
-                    container('docker-client') {
-                        image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
-                        //sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
-                    }
+
+            dir(path: "${directoryPath}/container"){
+                container('docker-client') {
+                    image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
+                    //sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
                 }
             }
+
         }
 
         stage('ECR Push') {
-            steps {
-                container('docker-client') {
-                    docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
-                        image.push()
-                    //    sh 'docker push "${awsECRURL}:${imageTag}"'
-                    }
+
+            container('docker-client') {
+                docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
+                    image.push()
+                //    sh 'docker push "${awsECRURL}:${imageTag}"'
                 }
             }
+
         }
 
         stage('Deploy'){
