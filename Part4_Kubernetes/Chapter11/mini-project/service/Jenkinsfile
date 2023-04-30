@@ -48,62 +48,62 @@ pipeline {
     stages {
 
 		stage('Checkout') {
-            container('docker'){
+            container('docker-client'){
                 checkout scm
             }
 		}
 
 		stage('Docker Build') {
 			dir(path: "${directoryPath}/container"){
-				container('docker') {
+				container('docker-client') {
 					image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
 				}
 			}
 		}
 
 		stage('ECR Push') {
-			container('docker') {
+			container('docker-client') {
 				docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
 					image.push()
 				}
 			}
 		}
 
-        stage('Deploy'){
-            container('argo'){
-                checkout(
-                    [
-                        $class: 'GitSCM',
-                        extensions: scm.extensions,
-                        branches: [
-                            [
-                                name: "*/${branch}"
-                            ]
-                        ],
-                        userRemoteConfigs: [
-                            [
-                                url: "${githubSSHURL}",
-                                credentialsId: "${githubKey}",
-                            ]
-                        ]
-                    ]
-                )
-                sshagent(credentials: ["${githubKey}"]){
-                    sh("""
-                        #!/usr/bin/env bash
-                        set +x
-                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                        git config --global user.email ${githubEmail}
-                        git checkout ${branch}
-                        cd ${directoryPath}/helm-charts
-                        sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
-                        cd ../../../../
-                        git commit -a -m ${commitMsg}
-                        git remote set-url origin ${githubSSHURL}
-                        git push -u origin master
-                    """)
-                }
-            }
-        }		
+//         stage('Deploy'){
+//             container('argo'){
+//                 checkout(
+//                     [
+//                         $class: 'GitSCM',
+//                         extensions: scm.extensions,
+//                         branches: [
+//                             [
+//                                 name: "*/${branch}"
+//                             ]
+//                         ],
+//                         userRemoteConfigs: [
+//                             [
+//                                 url: "${githubSSHURL}",
+//                                 credentialsId: "${githubKey}",
+//                             ]
+//                         ]
+//                     ]
+//                 )
+//                 sshagent(credentials: ["${githubKey}"]){
+//                     sh("""
+//                         #!/usr/bin/env bash
+//                         set +x
+//                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+//                         git config --global user.email ${githubEmail}
+//                         git checkout ${branch}
+//                         cd ${directoryPath}/helm-charts
+//                         sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
+//                         cd ../../../../
+//                         git commit -a -m ${commitMsg}
+//                         git remote set-url origin ${githubSSHURL}
+//                         git push -u origin master
+//                     """)
+//                 }
+//             }
+//         }
 	}
 }
