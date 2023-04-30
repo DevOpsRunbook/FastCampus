@@ -39,9 +39,9 @@ podTemplate(yaml: '''
                 - name: yq
                   image: linuxserver/yq:latest
                   command:
-                  - cat
+                  - sleep
                   args:
-                  - ""
+                  - 99d
 ''')
 {
     node(POD_LABEL) {
