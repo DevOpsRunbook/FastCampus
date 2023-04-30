@@ -9,7 +9,7 @@ def githubKey="github-key"
 def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
 def imageTag="red"
 
-podTemplate(label: 'docker-build',
+podTemplate(label: 'docker-build', serviceAccount: "jenkins", namespace: "jenkins", runAsUser: "0",
   containers: [
     containerTemplate(
       name: 'docker',
