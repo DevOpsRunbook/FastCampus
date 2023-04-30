@@ -7,44 +7,37 @@ def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
 def githubEmail="skwjdgh1@gmail.com"
 def githubKey="github-key"
 def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
-def imageTag="red"
+def imageTag="green"
 
-pipeline {
-    options {
-        disableConcurrentBuilds()
-    }
-    agent {
-        kubernetes {
-            label 'docker-in-docker-maven'
-            yaml """
-                apiVersion: v1
-                kind: Pod
-                spec:
-                containers:
-                - name: docker-client
-                  image: docker:19.03.1
-                  command: ['sleep', '99d']
-                  env:
-                    - name: DOCKER_HOST
-                      value: tcp://localhost:2375
-                - name: docker-daemon
-                  image: docker:19.03.1-dind
-                  env:
-                    - name: DOCKER_TLS_CERTDIR
-                      value: ""
-                  securityContext:
-                    privileged: true
-                  volumeMounts:
-                      - name: cache
-                        mountPath: /var/lib/docker
-                volumes:
-                  - name: cache
-                    hostPath:
-                      path: /tmp
-                      type: Directory
-                """
-        }
-    }
+podTemplate(label: 'docker-build',
+  containers: [
+    containerTemplate(
+      name: 'docker-client',
+      image: 'docker:latest',
+      command: 'sleep',
+      args: '99d',
+      ttyEnabled: true
+    ),
+    containerTemplate(
+      name: 'docker-daemon',
+      image: 'docker:19.03.1-dind',
+      command: 'sleep',
+      args: '99d',
+      ttyEnabled: true
+    ),
+    containerTemplate(
+      name: 'argo',
+      image: 'argoproj/argo-cd-ci-builder:latest',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+  ],
+  volumes: [
+    hostPathVolume(mountPath: '/var/lib/docker', hostPath: '/tmp'),
+  ]
+) {
+  node('docker-build') {
+
     stages {
 
 		stage('Checkout') {
@@ -58,65 +51,61 @@ pipeline {
 
 		stage('Docker Build') {
             steps {
-//                 script {
-                    dir(path: "${directoryPath}/container"){
-                        container('docker-client') {
-//                             image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
-                            sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
-                        }
+                dir(path: "${directoryPath}/container"){
+                    container('docker-client') {
+                        image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
+                        //sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
                     }
-//                 }
+                }
             }
 		}
 
 		stage('ECR Push') {
 		    steps {
-		        //script {
-                    container('docker-client') {
-                    //    docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
-                    //        image.push()
-                            sh 'docker push "${awsECRURL}:${imageTag}"'
-                    //    }
+                container('docker-client') {
+                    docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
+                        image.push()
+                    //    sh 'docker push "${awsECRURL}:${imageTag}"'
                     }
-		        //}
+                }
 		    }
 		}
 
-//         stage('Deploy'){
-//             container('argo'){
-//                 checkout(
-//                     [
-//                         $class: 'GitSCM',
-//                         extensions: scm.extensions,
-//                         branches: [
-//                             [
-//                                 name: "*/${branch}"
-//                             ]
-//                         ],
-//                         userRemoteConfigs: [
-//                             [
-//                                 url: "${githubSSHURL}",
-//                                 credentialsId: "${githubKey}",
-//                             ]
-//                         ]
-//                     ]
-//                 )
-//                 sshagent(credentials: ["${githubKey}"]){
-//                     sh("""
-//                         #!/usr/bin/env bash
-//                         set +x
-//                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-//                         git config --global user.email ${githubEmail}
-//                         git checkout ${branch}
-//                         cd ${directoryPath}/helm-charts
-//                         sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
-//                         cd ../../../../
-//                         git commit -a -m ${commitMsg}
-//                         git remote set-url origin ${githubSSHURL}
-//                         git push -u origin master
-//                     """)
-//                 }
-//             }
-//         }
+        stage('Deploy'){
+            container('argo'){
+                checkout(
+                    [
+                        $class: 'GitSCM',
+                        extensions: scm.extensions,
+                        branches: [
+                            [
+                                name: "*/${branch}"
+                            ]
+                        ],
+                        userRemoteConfigs: [
+                            [
+                                url: "${githubSSHURL}",
+                                credentialsId: "${githubKey}",
+                            ]
+                        ]
+                    ]
+                )
+                sshagent(credentials: ["${githubKey}"]){
+                    sh("""
+                        #!/usr/bin/env bash
+                        set +x
+                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                        git config --global user.email ${githubEmail}
+                        git checkout ${branch}
+                        cd ${directoryPath}/helm-charts
+                        sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
+                        cd ../../../../
+                        git commit -a -m ${commitMsg}
+                        git remote set-url origin ${githubSSHURL}
+                        git push -u origin master
+                    """)
+                }
+            }
+        }
 	}
 }
