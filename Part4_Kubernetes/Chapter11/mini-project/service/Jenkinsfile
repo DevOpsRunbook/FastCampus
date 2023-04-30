@@ -88,7 +88,7 @@ podTemplate(yaml: '''
 //                 )
 
                 dir(path: "${directoryPath}/helm-charts") {
-                    withCredentials([file(credentialsId: "${githubKey}", variable: 'GIT_DEPLOY_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "${githubKey}")]) {
 
                         sh("""
                             #!/usr/bin/env bash
