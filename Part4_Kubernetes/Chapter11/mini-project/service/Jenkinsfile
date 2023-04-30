@@ -88,21 +88,21 @@ podTemplate(yaml: '''
                         ]
                     ]
                 )
-                sshagent(credentials: ["${githubKey}"]){
-                    sh("""
-                        #!/usr/bin/env bash
-                        set +x
-                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                        git config --global user.email ${githubEmail}
-                        git checkout ${branch}
-                        cd ${directoryPath}/helm-charts
-                        sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
-                        cd ../../../../
-                        git commit -a -m ${commitMsg}
-                        git remote set-url origin ${githubSSHURL}
-                        git push -u origin ${branch}
-                    """)
-                }
+                //sshagent(credentials: ["${githubKey}"]){
+                sh("""
+                    #!/usr/bin/env bash
+                    set +x
+                    export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                    git config --global user.email ${githubEmail}
+                    git checkout ${branch}
+                    cd ${directoryPath}/helm-charts
+                    sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
+                    cd ../../../../
+                    git commit -a -m ${commitMsg}
+                    git remote set-url origin ${githubSSHURL}
+                    git push -u origin ${branch}
+                """)
+                //}
             }
         }
     }
