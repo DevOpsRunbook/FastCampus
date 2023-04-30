@@ -50,7 +50,7 @@ podTemplate(label: 'docker-build',
         stage('Docker Build') {
 
             dir(path: "${directoryPath}/container"){
-                container('docker-client') {
+                container('docker-daemon') {
                     image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
                     //sh 'docker build -t "${awsECRURL}:${imageTag}" --build-arg "COLOR=${imageTag}" .'
                 }
@@ -60,7 +60,7 @@ podTemplate(label: 'docker-build',
 
         stage('ECR Push') {
 
-            container('docker-client') {
+            container('docker-daemon') {
                 docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
                     image.push()
                 //    sh 'docker push "${awsECRURL}:${imageTag}"'
