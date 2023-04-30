@@ -88,9 +88,11 @@ podTemplate(yaml: '''
                 )
 
                 sh("""
+                    #!/usr/bin/env bash
+                    set +x
+                    export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
                     git config --global user.email ${githubEmail}
-                    pwd
-                    ls -al
+                    git checkout ${branch}
                     sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
                     git add --all
                     git commit -a -m ${commitMsg}
