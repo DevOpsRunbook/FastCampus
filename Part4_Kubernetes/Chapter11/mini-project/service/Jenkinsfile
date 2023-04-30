@@ -78,6 +78,8 @@ podTemplate(yaml: '''
                         set +x
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
                         git config --global user.email ${githubEmail}
+                        ls -al
+                        pwd
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ./FastCampus/${directoryPath}/helm-charts/values.yaml
                         git commit -a -m ${commitMsg}
                         git remote set-url origin ${githubSSHURL}
