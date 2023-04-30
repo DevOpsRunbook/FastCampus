@@ -77,7 +77,7 @@ podTemplate(yaml: '''
         stage('Deploy'){
             container('argocd'){
                 dir('DEPLOY') {
-                    sshagent(credentials: ["deployer"]) {
+                    sshagent(credentials: ["${githubKey}"]) {
                         sh ("""
                             git clone -b ${branch} ${githubSSHURL}
                             cd devops
