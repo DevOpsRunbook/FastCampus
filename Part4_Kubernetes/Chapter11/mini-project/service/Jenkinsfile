@@ -78,7 +78,7 @@ podTemplate(yaml: '''
             container('yq'){
                 dir('~/') {
                     git branch: "${branch}",
-                        credentialsId: ${githubKey},
+                        credentialsId: "${githubKey}",
                         url: "${githubSSHURL}"
 
                     sh ("""
