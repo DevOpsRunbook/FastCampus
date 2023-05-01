@@ -79,22 +79,14 @@ podTemplate(yaml: '''
                 withCredentials([sshUserPrivateKey(credentialsId: "${githubKey}", keyFileVariable: 'CERT')]) {
 
                     sh ("""
-                        #!/usr/bin/env bash
-                        set +x
-                        export GIT_SSH_COMMAND='ssh -oStrictHostKeyChecking=no'
                         mkdir -p ~/.ssh && chmod 700 ~/.ssh &&  cp -prf ${CERT} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
                         git config --global --add safe.directory '/home/jenkins/agent/workspace/mini-project'
                         git config --global user.email ${githubEmail}
-                        git config --global user.name ${githubUser}
                         eval `ssh-agent -s` && ssh-add ~/.ssh/id_rsa
                         ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-                        git checkout ${branch}
-                        pwd
-                        ls -al
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
                         git add ${directoryPath}/helm-charts/values.yaml
-                        git commit -a -m ${commitMsg}
-                        git remote set-url origin ${githubSSHURL}
+                        git commit -m ${commitMsg}
                         git push -u origin ${branch}
                     """)
                 }
