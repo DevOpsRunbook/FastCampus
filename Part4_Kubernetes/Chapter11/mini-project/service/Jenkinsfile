@@ -7,7 +7,7 @@ def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
 def githubEmail="skwjdgh1@gmail.com"
 def githubKey="github-key"
 def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
-def imageTag="green"
+def imageTag="blue"
 
 podTemplate(yaml: '''
               apiVersion: v1
@@ -52,7 +52,8 @@ podTemplate(yaml: '''
 
             dir(path: "${directoryPath}/container"){
                 container('docker') {
-                    image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
+                    // image = docker.build("${awsECRURL}:${imageTag}","--platform=linux/amd64 --build-arg COLOR=${imageTag} .")
+                    sh "docker buildx build --platform=linux/amd64 --build-arg COLOR=${imageTag} -t ${awsECRURL}:${imageTag} ./"
                 }
             }
 
@@ -62,7 +63,8 @@ podTemplate(yaml: '''
 
             container('docker') {
                 docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
-                    image.push()
+                    // image.push()
+                    sh "docker push ${awsECRURL}:${imageTag}"
                 }
             }
 
