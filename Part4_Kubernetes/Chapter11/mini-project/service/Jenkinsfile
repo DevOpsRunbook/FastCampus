@@ -37,12 +37,6 @@ podTemplate(yaml: '''
                   volumeMounts:
                   - name: docker-socket
                     mountPath: /var/run
-                - name: argocd
-                  image: argoproj/argocd
-                  command:
-                  - sleep
-                  args:
-                  - 99d
 ''')
 {
     node(POD_LABEL) {
@@ -76,7 +70,7 @@ podTemplate(yaml: '''
         }
 
         stage('Deploy'){
-            container('argocd'){
+            container('docker'){
                 dir('~/') {
                     git branch: "${branch}",
                         credentialsId: "${githubKey}",
