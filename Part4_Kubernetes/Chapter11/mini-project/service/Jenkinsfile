@@ -4,7 +4,6 @@ def awsRegion="ap-northeast-2"
 def branch="main"
 def commitMsg="mini-project"
 def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
-def githubUser="Najeongho"
 def githubEmail="skwjdgh1@gmail.com"
 def githubKey="github-key"
 def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
@@ -77,9 +76,11 @@ podTemplate(yaml: '''
                     url: "${githubSSHURL}"
 
                 withCredentials([sshUserPrivateKey(credentialsId: "${githubKey}", keyFileVariable: 'CERT')]) {
+
                     sh ("""
                         mkdir -p ~/.ssh && chmod 700 ~/.ssh &&  cp -prf ${CERT} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
                         git config --global --add safe.directory '/home/jenkins/agent/workspace/mini-project'
+                        git config --global user.email ${githubEmail}
                         eval `ssh-agent -s` && ssh-add ~/.ssh/id_rsa
                         ssh-keyscan -H github.com >> ~/.ssh/known_hosts
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
