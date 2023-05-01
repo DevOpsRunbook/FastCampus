@@ -1,14 +1,14 @@
-# Default values for bubblepool.
+# Default values for Mini-Project.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 2
 
 image:
-  repository: <AWS ECR Repository URL>
+  repository: 347880001135.dkr.ecr.ap-northeast-2.amazonaws.com/test
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: green
+  tag: blue
 
 
 container:
@@ -50,12 +50,12 @@ ingress:
   annotations: 
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
-      alb.ingress.kubernetes.io/subnets: <Public Subnet1 ID>, <Public Subnet2 ID>
+      alb.ingress.kubernetes.io/subnets: subnet-0957e1f271907b984, subnet-010ebdaf2754638ac
       kubernetes.io/ingress.class: alb
-      alb.ingress.kubernetes.io/certificate-arn: <ACM의 ARN>
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]' 
+#      alb.ingress.kubernetes.io/certificate-arn: <ACM의 ARN>
+#      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
   hosts:
-    - host: <마이크로서비스 DNS도메인명>
+    - host: ""
       paths:
         - path: /
           pathType: Prefix
@@ -84,7 +84,6 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
