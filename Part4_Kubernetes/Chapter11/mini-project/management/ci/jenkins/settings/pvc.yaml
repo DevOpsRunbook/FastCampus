@@ -9,4 +9,4 @@ spec:
   storageClassName: ebs-sc
   resources:
     requests:
-      storage: 20Gi
+      storage: 8Gi
