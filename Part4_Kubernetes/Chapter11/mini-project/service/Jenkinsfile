@@ -82,6 +82,8 @@ podTemplate(yaml: '''
                         url: "${githubSSHURL}"
 
                     sh ("""
+                        #!/usr/bin/env bash
+                        set +x
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
                         git add ${directoryPath}/helm-charts/values.yaml
                         git commit -m ${commitMsg}
