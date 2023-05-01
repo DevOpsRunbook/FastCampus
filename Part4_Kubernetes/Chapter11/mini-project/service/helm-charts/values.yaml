@@ -8,7 +8,7 @@ image:
   repository: 347880001135.dkr.ecr.ap-northeast-2.amazonaws.com/test
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: blue
+  tag: green
 
 
 container:
@@ -42,16 +42,15 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 443
+  port: 80
 
 ingress:
   enabled: true
-  className: {}
+  className: alb
   annotations: 
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
       alb.ingress.kubernetes.io/subnets: subnet-0957e1f271907b984, subnet-010ebdaf2754638ac
-      kubernetes.io/ingress.class: alb
 #      alb.ingress.kubernetes.io/certificate-arn: <ACM의 ARN>
 #      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
   hosts:
