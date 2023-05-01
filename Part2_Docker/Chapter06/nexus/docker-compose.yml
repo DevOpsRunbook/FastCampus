@@ -1,0 +1,48 @@
+
+version: "2"
+
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      # - "80:80"
+      - "443:443"
+      - "8082:8082"
+      - "5555:5555"
+      - "6666:6666"
+      - "7777:7777"
+      - "8888:8888"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    networks:
+      net:
+        ipv4_address: 192.168.102.20
+  nexus-node:
+    user: root
+    build:
+      context: ./nexus
+      dockerfile: Dockerfile
+    volumes:
+      - "NEXUS-DATA:/nexus-data"
+    # ports:
+    #   - "8443:8443"
+    #   - "8081:8081"
+    #   - "8082:8082"
+    #   - "5443:5443"
+    networks:
+      net:
+        ipv4_address: 192.168.102.10
+
+volumes:
+  NEXUS-DATA:
+
+networks:
+  net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.102.0/25
