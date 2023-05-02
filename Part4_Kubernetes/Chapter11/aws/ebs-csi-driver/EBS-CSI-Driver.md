@@ -1,4 +1,4 @@
-# EBS CSI Driver 설치 방법
+# AWS EBS CSI Driver 설치 방법
 
 (1) IAM Role 및 EKS내 서비스 어카운트 생성
 * 명령어
@@ -16,7 +16,8 @@ $ eksctl create iamserviceaccount \
 (2) eksctl 애드온을 통한 설치
 * 명령어
 ```
-$ eksctl create addon --name aws-ebs-csi-driver --cluster <EKS 클러스터명> --service-account-role-arn arn:aws:iam::<AWS 계정 ID>:role/AmazonEKS_EBS_CSI_DriverRole --force
+$ eksctl create addon --name aws-ebs-csi-driver --cluster <EKS 클러스터명> \
+    --service-account-role-arn arn:aws:iam::<AWS 계정 ID>:role/AmazonEKS_EBS_CSI_DriverRole --force
 ```
 
 (3) eksctl 애드온을 통한 설치 상태 확인

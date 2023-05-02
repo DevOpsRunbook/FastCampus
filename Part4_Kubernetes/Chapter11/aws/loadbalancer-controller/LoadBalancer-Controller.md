@@ -1,10 +1,10 @@
-# EBS CSI Driver 설치 방법
+# AWS Load Balancer Controller 설치 방법
 
 (1) IAM Policy 생성
 * 명령어
 ```
 $ aws iam create-policy \
-    --policy성-name AWSLoadBalancerControllerIAMPolicy \
+    --policy-name AWSLoadBalancerControllerIAMPolicy \
     --policy-document file://iam_policy.json
 ```
 
@@ -12,11 +12,11 @@ $ aws iam create-policy \
 * 명령어
 ```
 $ eksctl create iamserviceaccount \
-  --cluster=test-eks-cluster \
+  --cluster=<EKS Cluster명> \
   --namespace=kube-system \
   --name=aws-load-balancer-controller \
   --role-name "AmazonEKSLoadBalancerControllerRole" \
-  --attach-policy-arn=arn:aws:iam::347880001135:policy/AWSLoadBalancerControllerIAMPolicy \
+  --attach-policy-arn=arn:aws:iam::<AWS ID>:policy/AWSLoadBalancerControllerIAMPolicy \
   --override-existing-serviceaccounts \
   --approve
 ```
