@@ -1,6 +1,6 @@
 def awsECRURL="347880001135.dkr.ecr.ap-northeast-2.amazonaws.com/mini-project"
 def awsKey="aws-key"
-def awsRegion="ap-northeast-2"
+def awsRegion=""
 def branch="main"
 def commitMsg="mini-project"
 def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
