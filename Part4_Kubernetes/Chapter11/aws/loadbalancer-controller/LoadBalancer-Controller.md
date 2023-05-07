@@ -12,11 +12,11 @@ $ aws iam create-policy \
 * 명령어
 ```
 $ eksctl create iamserviceaccount \
-  --cluster=<EKS Cluster명> \
+  --cluster=test-eks-cluster \
   --namespace=kube-system \
   --name=aws-load-balancer-controller \
   --role-name "AmazonEKSLoadBalancerControllerRole" \
-  --attach-policy-arn=arn:aws:iam::<AWS ID>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --attach-policy-arn=arn:aws:iam::347880001135:policy/AWSLoadBalancerControllerIAMPolicy \
   --override-existing-serviceaccounts \
   --approve
 ```
@@ -42,6 +42,6 @@ $ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 (5) Helm Release 배포 확인 및 K8s 리소스 생성 확인
 * 명령어
 ```
-$ helm list
+$ helm list -n kube-system
 $ kubectl get deployment -n kube-system aws-load-balancer-controller
 ```
