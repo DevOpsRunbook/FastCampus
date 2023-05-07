@@ -1,13 +1,13 @@
-def awsECRURL="<AWS ECR URL>"
-def awsKey="<AWS Key Name at Jenkins>"
-def awsRegion="<AWS Region Name>"
-def branch="<Github Branch Name>"
-def commitMsg="<CD Commit Message>"
-def directoryPath="<Service Directory Path>"
-def githubEmail="<Github Account Email Name>"
-def githubKey="<Github Key Name at Jenkins>"
-def githubSSHURL="<Github SSH URL Name>"
-def imageTag="<Container Image Tag Name>"
+def awsECRURL="347880001135.dkr.ecr.ap-northeast-2.amazonaws.com/test"
+def awsKey="aws-key"
+def awsRegion="ap-northeast-2"
+def branch="main"
+def commitMsg="mini-project"
+def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
+def githubEmail="skwjdgh1@gmail.com"
+def githubKey="github-key"
+def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
+def imageTag="blue"
 
 podTemplate(yaml: '''
               apiVersion: v1
