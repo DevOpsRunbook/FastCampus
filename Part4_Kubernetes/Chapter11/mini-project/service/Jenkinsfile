@@ -85,7 +85,7 @@ podTemplate(yaml: '''
                         ssh-keyscan -H github.com >> ~/.ssh/known_hosts
                         sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
                         git add ${directoryPath}/helm-charts/values.yaml
-                        git commit -m ${commitMsg}
+                        git commit -m '${commitMsg}'
                         git push -u origin ${branch}
                     """)
                 }
