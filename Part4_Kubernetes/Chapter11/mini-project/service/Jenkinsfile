@@ -1,13 +1,13 @@
-def awsECRURL="347880001135.dkr.ecr.ap-northeast-2.amazonaws.com/mini-project"
-def awsKey="aws-key"
-def awsRegion="ap-northeast-2"
-def branch="main"
-def commitMsg="mini-project"
-def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
-def githubEmail="skwjdgh1@gmail.com"
-def githubKey="github-key"
-def githubSSHURL="git@github.com:Najeongho/FastCampus.git"
-def imageTag="blue"
+def awsECRURL="<AWS ECR URL>"
+def awsKey="<Jenkins 내 AWS Credential명>"
+def awsRegion="<ECR 적용 리전>"
+def branch="<Github repository branch명>"
+def commitMsg="<배포용 Helm Chart Commit 메시지>"
+def directoryPath="<Jenkinsfile이 있는 Path>"
+def githubEmail="<Github 계정 이메일 주소>"
+def githubKey="<Jenkins 내 설정된 Github Credential명>"
+def githubSSHURL="<Github Repository의 SSH URL 주소>"
+def imageTag="<Bubble App Color>"
 
 podTemplate(yaml: '''
               apiVersion: v1
