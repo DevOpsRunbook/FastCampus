@@ -1,92 +1,95 @@
-def awsECRURL="<AWS ECR Repository URL>"
+def awsECRURL="<AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/mini-project"
 def awsKey="aws-key"
 def awsRegion="ap-northeast-2"
-def branch="master"
-def commitMsg="mini-project"
-def directoryPath="Chapter11/mini-project/service"
-def githubEmail="<Github Email명>"
+def branch="main"
+def commitMsg="Mini Project CI/CD Pipeline Job"
+def directoryPath="Part4_Kubernetes/Chapter11/mini-project/service"
+def githubEmail="<Github Email Address>"
 def githubKey="github-key"
-def githubSSHURL="git@github.com:<Github Profile명>/<Github Repository명>.git"
-def imageTag="red"
+def githubSSHURL="git@github.com:<Github Username>/FastCampus.git"
+def imageTag="<Color Tag>"
 
-podTemplate(label: 'docker-build',
-  containers: [
-    containerTemplate(
-      name: 'docker',
-      image: 'docker',
-      command: 'cat',
-      ttyEnabled: true
-    ),
-    containerTemplate(
-      name: 'argo',
-      image: 'argoproj/argo-cd-ci-builder:latest',
-      command: 'cat',
-      ttyEnabled: true
-    ),
-  ],
-  volumes: [ 
-    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'), 
-  ]
-) {
-  node('docker-build') {
+podTemplate(yaml: '''
+              apiVersion: v1
+              kind: Pod
+              spec:
+                volumes:
+                - name: docker-socket
+                  emptyDir: {}
+                containers:
+                - name: docker
+                  image: docker:23.0.5-git
+                  readinessProbe:
+                    exec:
+                      command: [sh, -c, "ls -S /var/run/docker.sock"]
+                  command:
+                  - sleep
+                  args:
+                  - 99d
+                  volumeMounts:
+                  - name: docker-socket
+                    mountPath: /var/run
+                - name: docker-daemon
+                  image: docker:23.0.5-dind
+                  securityContext:
+                    privileged: true
+                  volumeMounts:
+                  - name: docker-socket
+                    mountPath: /var/run
+''')
+{
+    node(POD_LABEL) {
 
-		stage('Checkout') {
+        stage('Checkout') {
+
             container('docker'){
                 checkout scm
             }
-		}
 
-		stage('Docker Build') {
-			dir(path: "${directoryPath}/container"){
-				container('docker') {
-					image = docker.build("${awsECRURL}:${imageTag}","--build-arg COLOR=${imageTag} .")
-				}
-			}
-		}
+        }
 
-		stage('ECR Push') {
-			container('docker') {
-				docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
-					image.push()
-				}
-			}
-		}
+        stage('Docker Build') {
+
+            dir(path: "${directoryPath}/container"){
+                container('docker') {
+                    sh "docker buildx build --platform=linux/amd64 --build-arg COLOR=${imageTag} -t ${awsECRURL}:${imageTag} ./"
+                }
+            }
+
+        }
+
+        stage('ECR Push') {
+
+            container('docker') {
+                docker.withRegistry("https://${awsECRURL}", "ecr:${awsRegion}:${awsKey}") {
+                    sh "docker push ${awsECRURL}:${imageTag}"
+                }
+            }
+
+        }
 
         stage('Deploy'){
-            container('argo'){
-                checkout(
-                    [
-                        $class: 'GitSCM',
-                        extensions: scm.extensions,
-                        branches: [
-                            [
-                                name: "*/${branch}"
-                            ]
-                        ],
-                        userRemoteConfigs: [
-                            [
-                                url: "${githubSSHURL}",
-                                credentialsId: "${githubKey}",
-                            ]
-                        ]
-                    ]
-                )
-                sshagent(credentials: ["${githubKey}"]){
-                    sh("""
-                        #!/usr/bin/env bash
-                        set +x
-                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+            container('docker'){
+
+                git branch: "${branch}",
+                    credentialsId: "${githubKey}",
+                    url: "${githubSSHURL}"
+
+                withCredentials([sshUserPrivateKey(credentialsId: "${githubKey}", keyFileVariable: 'CERT')]) {
+
+                    sh ("""
+                        mkdir -p ~/.ssh && chmod 700 ~/.ssh &&  cp -prf ${CERT} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+                        git config --global --add safe.directory '/home/jenkins/agent/workspace/mini-project'
                         git config --global user.email ${githubEmail}
-                        git checkout ${branch}
-                        cd ${directoryPath}/helm-charts
-                        sed -i 's/tag:.*/tag: ${imageTag}/g' values.yaml
-                        cd ../../../../
-                        git commit -a -m ${commitMsg}
-                        git remote set-url origin ${githubSSHURL}
-                        git push -u origin master
+                        eval `ssh-agent -s` && ssh-add ~/.ssh/id_rsa
+                        ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+                        sed -i 's/tag:.*/tag: ${imageTag}/g' ${directoryPath}/helm-charts/values.yaml
+                        git add ${directoryPath}/helm-charts/values.yaml
+                        git commit -m '${commitMsg}'
+                        git push -u origin ${branch}
                     """)
                 }
             }
-        }		
-	}
+        }
+    }
 }

@@ -1,17 +1,17 @@
 resource "aws_s3_bucket" "test-s3-tf-state" {
 
-  bucket = "<Test Name>-s3-tf-state"
+  bucket = "<Project Name>-s3-tf-state"
 
   tags = {
-    "Name" = "<Test Name>-s3-tf-state"
+    "Name" = "<Project Name>-s3-tf-state"
   }
   
 }
 
-resource "aws_dynamodb_table" "test-ddb-tf-lock" {
+resource "aws_dynamodb_table" "test-ddb-lock-table" {
 
   depends_on   = [aws_s3_bucket.test-s3-tf-state]
-  name         = "<Test Name>-ddb-tf-lock"
+  name         = "<Project Name>-ddb-lock-table"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
@@ -21,7 +21,7 @@ resource "aws_dynamodb_table" "test-ddb-tf-lock" {
   }
 
   tags = {
-    "Name" = "<Test Name>-ddb-tf-lock"
+    "Name" = "<Project Name>-ddb-lock-table"
   }
 
 }
