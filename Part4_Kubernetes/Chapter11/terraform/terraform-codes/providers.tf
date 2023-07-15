@@ -8,10 +8,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "mini-project-s3-tf-state"
+    bucket = "<Project Name>-s3-tf-state"
     key = "terraform.tfstate"
     region = "ap-northeast-2"
-    dynamodb_table = "mini-project-ddb-lock-table"
+    dynamodb_table = "<Project Name>-ddb-lock-table"
     encrypt = "true"
   }
 }

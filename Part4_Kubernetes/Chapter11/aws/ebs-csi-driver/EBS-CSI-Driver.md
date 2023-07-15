@@ -17,7 +17,7 @@ $ eksctl create iamserviceaccount \
 * 명령어
 ```
 $ eksctl create addon --name aws-ebs-csi-driver --cluster test-eks-cluster \
-    --service-account-role-arn arn:aws:iam::347880001135:role/AmazonEKS_EBS_CSI_DriverRole --force
+    --service-account-role-arn arn:aws:iam::<AWS ID Number>:role/AmazonEKS_EBS_CSI_DriverRole --force
 ```
 
 (3) eksctl 애드온을 통한 설치 상태 확인

@@ -5,10 +5,10 @@
 replicaCount: 2
 
 image:
-  repository: 347880001135.dkr.ecr.ap-northeast-2.amazonaws.com/mini-project
+  repository: <AWS ID Number>.dkr.ecr.ap-northeast-2.amazonaws.com/mini-project
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: red
+  tag: <Color Tag>
 
 container:
   port: 8080
@@ -49,7 +49,7 @@ ingress:
   annotations: 
       alb.ingress.kubernetes.io/scheme: internet-facing
       alb.ingress.kubernetes.io/target-type: ip
-      alb.ingress.kubernetes.io/subnets: subnet-041dd391882f88aa8, subnet-0041cf6ceda356daf
+      alb.ingress.kubernetes.io/subnets: <AWS Subenet IDs>
   hosts:
     - host: ""
       paths:
